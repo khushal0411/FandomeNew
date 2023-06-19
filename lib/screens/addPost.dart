@@ -7,7 +7,7 @@ class addPostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text("add post"),
+        child: Text("add post demo "),
       ),
     );
   }
