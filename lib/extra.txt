@@ -1,0 +1,45 @@
+body: Column(
+        children: [
+          SizedBox(
+            height: 160,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                storyBubble(imgName: "s1", text: "JoyPatel24"),
+                storyBubble(imgName: "s2", text: "JoyPatel24"),
+                storyBubble(imgName: "s3", text: "JoyPatel24"),
+                storyBubble(imgName: "s4", text: "JoyPatel24"),
+                storyBubble(imgName: "s1", text: "JoyPatel24"),
+                storyBubble(imgName: "s2", text: "JoyPatel24"),
+              ],
+            ),
+          ),
+          Container(
+            height: 500,
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              children: [mainPost(), mainPost()],
+            ),
+          )
+        ],
+      ),
+
+      SizedBox(
+            height: 160,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                storyBubble(imgName: "s1", text: "JoyPatel24"),
+                storyBubble(imgName: "s2", text: "bhawsar1212"),
+                storyBubble(imgName: "s3", text: "TommyTdsd3"),
+                storyBubble(imgName: "s4", text: "JoyPatel24"),
+                storyBubble(imgName: "s1", text: "JoyPatel24"),
+                storyBubble(imgName: "s2", text: "JoyPatel24"),
+              ],
+            ),
+          ),
+
+          Image.asset(
+              "assets/images/$imgName.png",
+              fit: BoxFit.fill,
+            ),
