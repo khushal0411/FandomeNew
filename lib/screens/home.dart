@@ -53,7 +53,7 @@ class homePage extends StatelessWidget {
                               padding: EdgeInsets.only(
                                   top: 35, left: 0, right: 10, bottom: 10),
                               child: Text(
-                                "Settings one",
+                                "Settings",
                                 style:
                                     TextStyle(color: textColor, fontSize: 18),
                               ),
