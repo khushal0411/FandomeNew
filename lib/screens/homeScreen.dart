@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/addPost.dart';
+import 'package:testproj/screens/chat.dart';
 import 'package:testproj/screens/explore.dart';
 import 'package:testproj/screens/home.dart';
 import 'package:testproj/screens/story.dart';
@@ -26,7 +27,7 @@ class _homeScreenState extends State<homeScreen> {
     homePage(),
     explorePage(),
     storyPage(),
-    addPostPage(),
+    chatPage(),
     userProfilePage()
   ];
 
@@ -61,8 +62,8 @@ class _homeScreenState extends State<homeScreen> {
             label: 'Story',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_box_outlined),
-            label: 'Addpost',
+            icon: Icon(Icons.chat_bubble_outline_rounded),
+            label: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box_outlined),

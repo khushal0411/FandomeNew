@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/utils/mainPosts.dart';
 
 class homePage extends StatelessWidget {
@@ -18,9 +19,14 @@ class homePage extends StatelessWidget {
           style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
         ),
         actions: [
-          const IconButton(
-            onPressed: null,
-            icon: Icon(
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const addPostPage()),
+              );
+            },
+            icon: const Icon(
               Icons.add_a_photo_outlined,
               color: textColor,
               size: 30,
@@ -29,17 +35,27 @@ class homePage extends StatelessWidget {
           IconButton(
             onPressed: () {
               showModalBottomSheet(
+                backgroundColor: backgroundColor,
                 context: context,
                 builder: (BuildContext context) {
-                  return const SizedBox(
-                    height: 200,
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.25,
                     child: Column(
                       children: [
                         Center(
-                            child: SizedBox(
-                          height: 1,
+                            child: Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Container(
+                            height: 5,
+                            width: 80,
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                color: lightGrey,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                          ),
                         )),
-                        Row(
+                        const Row(
                           children: [
                             Padding(
                               padding: EdgeInsets.only(
@@ -54,6 +70,27 @@ class homePage extends StatelessWidget {
                                   top: 35, left: 0, right: 10, bottom: 10),
                               child: Text(
                                 "Settings",
+                                style:
+                                    TextStyle(color: textColor, fontSize: 18),
+                              ),
+                            )
+                          ],
+                        ),
+                        const Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 15, left: 20, right: 10, bottom: 10),
+                              child: Icon(
+                                Icons.logout_outlined,
+                                size: 30,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: 15, left: 0, right: 10, bottom: 10),
+                              child: Text(
+                                "Log Out",
                                 style:
                                     TextStyle(color: textColor, fontSize: 18),
                               ),
@@ -81,7 +118,7 @@ class homePage extends StatelessWidget {
             children: [
               Container(
                 height: MediaQuery.of(context).size.height,
-                padding: const EdgeInsets.only(bottom: 150),
+                padding: const EdgeInsets.only(bottom: 140),
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 0.0),
                   child: ListView(
