@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "76504261102",
+    "project_id": "fandome-7f9ba",
+    "storage_bucket": "fandome-7f9ba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76504261102:android:418863043df4ef2c4deeff",
+        "android_client_info": {
+          "package_name": "com.example.testproj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76504261102-80ptirmav3tdlh42sogeopqsu12adqji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-rb4-z9pfTrCTcyqPhgRcs9d0QOOBmHQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76504261102-80ptirmav3tdlh42sogeopqsu12adqji.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "76504261102-6dk812mnbhqsd530ur9h6f4ph283sq91.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.testproj"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

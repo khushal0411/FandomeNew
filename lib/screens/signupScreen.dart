@@ -1,9 +1,44 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/signin.dart';
 
-class signUp extends StatelessWidget {
+class signUp extends StatefulWidget {
   const signUp({super.key});
 
+  @override
+  State<signUp> createState() => _signUpState();
+}
+
+class _signUpState extends State<signUp> {
+  String email="";
+  String password="";
+  String confPassword="";
+  String output="";
+
+Future<void> signUpFirebase() async{
+  if(password==confPassword){
+  try{
+    UserCredential userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+    Fluttertoast.showToast(msg: "User Signed Up Sucessfully.",toastLength: Toast.LENGTH_SHORT);
+  }
+  on FirebaseAuthException catch(e) {
+    if(e.code=='weak-password'){
+      Fluttertoast.showToast(msg: "Password Provided too weak.",toastLength: Toast.LENGTH_SHORT);
+    }
+    else if(e.code=='email-already-in-use'){
+      Fluttertoast.showToast(msg: "User already exists for the given email.",toastLength: Toast.LENGTH_SHORT);
+    }
+  }
+  catch (e){
+    Fluttertoast.showToast(msg: e.toString(),toastLength: Toast.LENGTH_SHORT);
+  }}
+  else{
+    Fluttertoast.showToast(msg: "Password does not match.",toastLength: Toast.LENGTH_SHORT);
+  }
+}
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,11 +47,11 @@ class signUp extends StatelessWidget {
         backgroundColor: backgroundColor,
         title: const Text(" "),
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 16.0, right: 16.0),
               child: Row(
                 children: [
@@ -37,7 +72,7 @@ class signUp extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
                 "Be Creative...",
@@ -47,6 +82,9 @@ class signUp extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
               child: TextField(
+                onChanged:(value)=> setState(() {
+                  email=value;
+                }),
                 decoration: InputDecoration(
                   hintText: "Enter your email",
                   filled: true,
@@ -62,7 +100,9 @@ class signUp extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
-              child: TextField(
+              child: TextField(onChanged:(value)=> setState(() {
+                  password=value;
+                }),
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Create your password",
@@ -80,6 +120,9 @@ class signUp extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
               child: TextField(
+                onChanged:(value)=> setState(() {
+                  confPassword=value;
+                }),
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: "Confirm password",
@@ -100,7 +143,7 @@ class signUp extends StatelessWidget {
                 height: 50,
                 width: double.infinity,
                 child: TextButton(
-                  onPressed: null,
+                  onPressed: signUpFirebase,
                   style: ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(companyColor),
                     foregroundColor: MaterialStatePropertyAll(lightGrey),
@@ -124,12 +167,18 @@ class signUp extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
-              child: Center(
-                child: Text(
-                  "Already have an account",
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: textColor,
+
+              child: GestureDetector(
+                onTap: () {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const signIn()),);
+              },
+                child: Center(
+                          
+                  child: Text("Already have an account",
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: textColor,
+                    ),
                   ),
                 ),
               ),

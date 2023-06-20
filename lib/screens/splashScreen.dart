@@ -1,8 +1,33 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/homeScreen.dart';
+import 'package:testproj/screens/signin.dart';
+import 'package:testproj/screens/signupScreen.dart';
 
-class splashScreen extends StatelessWidget {
+class splashScreen extends StatefulWidget {
   const splashScreen({super.key});
+
+  @override
+  State<splashScreen> createState() => _splashScreenState();
+}
+
+class _splashScreenState extends State<splashScreen> {
+   FirebaseAuth firebaseAuth=FirebaseAuth.instance;
+  @override
+  void initState(){
+    super.initState();
+    Future.delayed(
+      const Duration(seconds: 2),(){
+        User? user= firebaseAuth.currentUser;
+    if(user!=null){
+       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const homeScreen()),);
+    }else{
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const signIn()),);}
+      }
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -1,18 +1,33 @@
+import 'dart:ffi';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/homeScreen.dart';
+import 'package:testproj/screens/signupScreen.dart';
 
-class signIn extends StatelessWidget {
+class signIn extends StatefulWidget {
   const signIn({super.key});
 
+
+  @override
+  State<signIn> createState() => _signInState();
+}
+
+class _signInState extends State<signIn> {
+ 
+  
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         backgroundColor: backgroundColor,
         title: const Text(" "),
       ),
-      body: const Column(
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -106,18 +121,28 @@ class signIn extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0),
-            child: Center(
-              child: Text(
-                "Create new account",
-                style: TextStyle(
-                  fontSize: 15,
-                  color: textColor,
+            
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const signUp()),);
+              },
+              child: Center(
+                
+                child: Text(
+                  "Create new account",
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: textColor,
+                  ),
+                  
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
+      
     );
+
   }
 }
