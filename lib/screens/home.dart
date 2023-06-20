@@ -1,10 +1,19 @@
+
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/addPost.dart';
+import 'package:testproj/screens/signin.dart';
 import 'package:testproj/utils/mainPosts.dart';
 
 class homePage extends StatelessWidget {
-  const homePage({super.key});
+  homePage({super.key});
+
+  final FirebaseAuth firebaseAuth= FirebaseAuth.instance;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,26 +85,40 @@ class homePage extends StatelessWidget {
                             )
                           ],
                         ),
-                        const Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 15, left: 20, right: 10, bottom: 10),
-                              child: Icon(
-                                Icons.logout_outlined,
-                                size: 30,
+                        GestureDetector( onTap: () async {
+                        
+                          try{
+                            await firebaseAuth.signOut();
+                            // ignore: use_build_context_synchronously
+                            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const signIn()),);
+                            Fluttertoast.showToast(msg: "User Signed Out Successfully.",toastLength: Toast.LENGTH_SHORT);
+                          }
+                          catch (e){
+                            Fluttertoast.showToast(msg: "Error signing out -$e",toastLength: Toast.LENGTH_SHORT);
+                          }
+
+                        },
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: 15, left: 20, right: 10, bottom: 10),
+                                child: Icon(
+                                  Icons.logout_outlined,
+                                  size: 30,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 15, left: 0, right: 10, bottom: 10),
-                              child: Text(
-                                "Log Out",
-                                style:
-                                    TextStyle(color: textColor, fontSize: 18),
-                              ),
-                            )
-                          ],
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: 15, left: 0, right: 10, bottom: 10),
+                                child: Text(
+                                  "Log Out",
+                                  style:
+                                      TextStyle(color: textColor, fontSize: 18),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ],
                     ),

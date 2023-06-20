@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/home.dart';
+import 'package:testproj/screens/homeScreen.dart';
 import 'package:testproj/screens/signin.dart';
 
 class signUp extends StatefulWidget {
@@ -18,10 +20,22 @@ class _signUpState extends State<signUp> {
   String output="";
 
 Future<void> signUpFirebase() async{
+   if(email.isEmpty){
+    Fluttertoast.showToast(msg: "Email is empty",toastLength: Toast.LENGTH_SHORT);
+  }
+  else if (password.isEmpty) {
+    Fluttertoast.showToast(msg: "Password is empty",toastLength: Toast.LENGTH_SHORT);
+  }else if (confPassword.isEmpty) {
+    Fluttertoast.showToast(msg: "Confirm Password is empty",toastLength: Toast.LENGTH_SHORT);
+  }
+  else{
   if(password==confPassword){
   try{
+    // ignore: unused_local_variable
     UserCredential userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
     Fluttertoast.showToast(msg: "User Signed Up Sucessfully.",toastLength: Toast.LENGTH_SHORT);
+    // ignore: use_build_context_synchronously
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const homeScreen()),);
   }
   on FirebaseAuthException catch(e) {
     if(e.code=='weak-password'){
@@ -36,7 +50,7 @@ Future<void> signUpFirebase() async{
   }}
   else{
     Fluttertoast.showToast(msg: "Password does not match.",toastLength: Toast.LENGTH_SHORT);
-  }
+  }}
 }
   
   @override
