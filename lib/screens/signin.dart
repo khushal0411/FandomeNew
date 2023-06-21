@@ -1,7 +1,4 @@
-import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:testproj/constant/color.dart';
@@ -11,40 +8,43 @@ import 'package:testproj/screens/signupScreen.dart';
 class signIn extends StatefulWidget {
   const signIn({super.key});
 
-
   @override
   State<signIn> createState() => _signInState();
 }
 
 class _signInState extends State<signIn> {
-  String email= "";
-  String password="";
-  
-Future<void> signInFirebase() async{
-  if(email.isEmpty){
-    Fluttertoast.showToast(msg: "Email is empty",toastLength: Toast.LENGTH_SHORT);
+  String email = "";
+  String password = "";
+
+  Future<void> signInFirebase() async {
+    if (email.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "Email is empty", toastLength: Toast.LENGTH_SHORT);
+    } else if (password.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "Password is empty", toastLength: Toast.LENGTH_SHORT);
+    } else {
+      try {
+        // ignore: unused_local_variable
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: email, password: password);
+        Fluttertoast.showToast(
+            msg: "User Signed In Sucessfully.",
+            toastLength: Toast.LENGTH_SHORT);
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const homeScreen()),
+        );
+      } catch (e) {
+        Fluttertoast.showToast(
+            msg: e.toString(), toastLength: Toast.LENGTH_SHORT);
+      }
+    }
   }
-  else if (password.isEmpty) {
-    Fluttertoast.showToast(msg: "Password is empty",toastLength: Toast.LENGTH_SHORT);
-  }
-  else{
-     try{
-    // ignore: unused_local_variable
-    UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-    Fluttertoast.showToast(msg: "User Signed In Sucessfully.",toastLength: Toast.LENGTH_SHORT);
-    // ignore: use_build_context_synchronously
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const homeScreen()),);
-  }
-  catch (e){
-    Fluttertoast.showToast(msg: e.toString(),toastLength: Toast.LENGTH_SHORT);
-  }
-  }
-  }
- 
-  
+
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -85,9 +85,9 @@ Future<void> signInFirebase() async{
           Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
             child: TextField(
-              onChanged:(value)=> setState(() {
-                  email=value;
-                }),
+              onChanged: (value) => setState(() {
+                email = value;
+              }),
               decoration: InputDecoration(
                 hintText: "Enter your email",
                 filled: true,
@@ -104,9 +104,9 @@ Future<void> signInFirebase() async{
           Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
             child: TextField(
-              onChanged:(value)=> setState(() {
-                  password=value;
-                }),
+              onChanged: (value) => setState(() {
+                password = value;
+              }),
               obscureText: true,
               decoration: InputDecoration(
                 hintText: "Enter your password",
@@ -151,28 +151,26 @@ Future<void> signInFirebase() async{
           ),
           Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0),
-            
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const signUp()),);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const signUp()),
+                );
               },
               child: Center(
-                
                 child: Text(
                   "Create new account",
                   style: TextStyle(
                     fontSize: 15,
                     color: textColor,
                   ),
-                  
                 ),
               ),
             ),
           ),
         ],
       ),
-      
     );
-
   }
 }

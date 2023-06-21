@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:testproj/constant/color.dart';
-import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/screens/chat.dart';
 import 'package:testproj/screens/explore.dart';
 import 'package:testproj/screens/home.dart';
