@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/screens/editProfile.dart';
 
@@ -10,76 +11,62 @@ import 'package:firebase_database/firebase_database.dart';
 
 class userProfilePage extends StatefulWidget {
   const userProfilePage({super.key});
+  
 
   @override
   State<userProfilePage> createState() => _userProfilePageState();
+  
+  
 }
 
-Future<void> pushData() async {
-  Map<String, dynamic> updatedData = {
-    "name": "Joy Goyal",
-    "age": "92",
-    "isVerified": true,
-    "link": "test",
-    "bio":
-        "John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
-    "profilePic": "data",
-    "location": "Toronto, ON, CA",
-    "designation": "Senior Designer",
-    "dob": "22-06-2001"
-  };
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  User? user = firebaseAuth.currentUser;
-  // data updation
-// DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
-// databaseReference.child("Users").child(user!.uid.toString()).once().then((value){
-// final data= value.snapshot;
-// Object? values = data.value;
-// Map<dynamic, dynamic>? personMap = values as Map?;
-// print(personMap!.keys.first.toString());
-//  String p=user.uid.toString()+"/"+personMap!.keys.first.toString();
-// databaseReference.child('Users/$p').update(updatedData).then((value) {
-//     print('Data updated successfully $p');
-//   }).catchError((error) {
-//     print('Failed to update data: $error');
-//   });
-
-// });
-// .push().set({
-//   "name":"Khushal Goyal",
-//   "age":"22",
-//   "isVerified":true,
-//   "link":"test",
-//   "bio":"John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
-//   "profilePic":"data",
-//   "location":"Toronto, ON, CA",
-//   "designation":"Senior Designer",
-//   "dob":"22-06-2001"
-// });
-}
 
 class _userProfilePageState extends State<userProfilePage> {
+   String name="";
+  String username="";
+  bool isVerified= false;
+  String designation="";
+  String location="",bio="", link="",profilePic="";
+
+Future<void> userData() async{
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  User? userMail = firebaseAuth.currentUser;
+  SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+  List<String>? user= sharedPreferences.getStringList('k');
+  print(user);
+  setState(() {
+    bio=user![5];
+designation=user[7];
+if(user![0]=="true"){
+isVerified=true;
+}
+
+link=user[3];
+location=user[6];
+name=user[4];
+profilePic=user[2];
+username=userMail!.email!.split('@')[0].toString();
+
+  });
+  
+}
+
+@override
+void initState() {
+    // TODO: implement initState
+    super.initState();
+    userData();
+  }
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: backgroundColor,
-        title: const Row(
-          children: [
-            Text(
-              "angilinamario24",
-              style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 5.0),
-              child: Icon(
-                Icons.verified,
-                color: Colors.blue,
-              ),
-            )
-          ],
+        title:  Text(
+          username,
+          style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
         ),
         actions: [
           IconButton(
@@ -167,10 +154,12 @@ class _userProfilePageState extends State<userProfilePage> {
                     height: 120,
                     decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: lightGrey),
-                    child: Image.asset("assets/images/story.png"),
+                    child: CircleAvatar(radius: 100,backgroundImage: NetworkImage(profilePic),
+                    ),
+                    ),
                   ),
-                ),
-                const Column(
+                
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -179,19 +168,25 @@ class _userProfilePageState extends State<userProfilePage> {
                           padding: EdgeInsets.only(
                               left: 0.0, right: 5, bottom: 0, top: 0),
                           child: Text(
-                            "Angilina Mario",
+                            name,
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: textColor),
                           ),
                         ),
+                         
                         Padding(
                             padding: EdgeInsets.only(
                                 left: 0, right: 10, bottom: 0, top: 0),
-                            child: Icon(
-                              Icons.verified,
-                              color: Colors.blue,
+                               
+                            child: Visibility(
+                              visible: isVerified,
+                              child: Icon(
+                                Icons.verified,
+                                color: Colors.blue,
+                                
+                              ),
                             )),
                       ],
                     ),
@@ -199,7 +194,7 @@ class _userProfilePageState extends State<userProfilePage> {
                       padding: EdgeInsets.only(
                           left: 0.0, right: 10, bottom: 0, top: 0),
                       child: Text(
-                        "Product Designing",
+                        designation,
                         style: TextStyle(
                           fontSize: 13,
                           color: darkGrey,
@@ -219,7 +214,7 @@ class _userProfilePageState extends State<userProfilePage> {
                           padding: EdgeInsets.only(
                               left: 0.0, right: 10, bottom: 0, top: 0),
                           child: Text(
-                            "Sheffield, West London",
+                           location,
                             style: TextStyle(
                               fontSize: 13,
                               color: darkGrey,
@@ -232,14 +227,14 @@ class _userProfilePageState extends State<userProfilePage> {
                 ),
               ],
             ),
-            const Padding(
+             Padding(
               padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 5.0),
               child: Text(
-                "Adventure seeker ✨ | Passionate about new ventures 🌟 | Spreading positivity 📸 | Capturing the beauty of the world 🌍Capturing the beauty of the world 🌍",
+                bio,
                 style: TextStyle(color: textColor, fontSize: 15),
               ),
             ),
-            const Row(
+             Row(
               children: [
                 Padding(
                     padding:
@@ -251,7 +246,7 @@ class _userProfilePageState extends State<userProfilePage> {
                 Padding(
                   padding: EdgeInsets.only(left: 5.0, right: 10.0, bottom: 5.0),
                   child: Text(
-                    "https://dribbble.com/search/profile",
+                    link,
                     style: TextStyle(
                         color: Color.fromARGB(255, 38, 102, 154),
                         fontSize: 15,
