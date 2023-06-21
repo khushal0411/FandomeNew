@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:testproj/screens/addPost.dart';
+import 'package:testproj/screens/editProfile.dart';
 
 import '../constant/color.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -13,22 +15,22 @@ class userProfilePage extends StatefulWidget {
   State<userProfilePage> createState() => _userProfilePageState();
 }
 
-Future<void> pushData() async{
-
+Future<void> pushData() async {
   Map<String, dynamic> updatedData = {
-    "name":"Joy Goyal",
-  "age":"92",
-  "isVerified":true,
-  "link":"test",
-  "bio":"John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
-  "profilePic":"data",
-  "location":"Toronto, ON, CA",
-  "designation":"Senior Designer",
-  "dob":"22-06-2001"
+    "name": "Joy Goyal",
+    "age": "92",
+    "isVerified": true,
+    "link": "test",
+    "bio":
+        "John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
+    "profilePic": "data",
+    "location": "Toronto, ON, CA",
+    "designation": "Senior Designer",
+    "dob": "22-06-2001"
   };
-   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-     User? user = firebaseAuth.currentUser;
-     // data updation
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  User? user = firebaseAuth.currentUser;
+  // data updation
 // DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
 // databaseReference.child("Users").child(user!.uid.toString()).once().then((value){
 // final data= value.snapshot;
@@ -60,6 +62,7 @@ class _userProfilePageState extends State<userProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: backgroundColor,
@@ -79,16 +82,22 @@ class _userProfilePageState extends State<userProfilePage> {
           ],
         ),
         actions: [
-          const IconButton(
-            onPressed: null,
-            icon: Icon(
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const editProfile()));
+            },
+            icon: const Icon(
               Icons.edit_outlined,
               color: textColor,
               size: 30,
             ),
           ),
-          const IconButton(
-            onPressed: pushData,
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const addPostPage()));
+            },
             icon: Icon(
               Icons.add_a_photo_outlined,
               color: textColor,

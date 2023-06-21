@@ -4,14 +4,14 @@ import 'package:image_picker/image_picker.dart';
 
 import '../constant/color.dart';
 
-class addPostPage extends StatefulWidget {
-  const addPostPage({super.key});
+class editProfile extends StatefulWidget {
+  const editProfile({super.key});
 
   @override
-  State<addPostPage> createState() => _addPostPageState();
+  State<editProfile> createState() => _editProfileState();
 }
 
-class _addPostPageState extends State<addPostPage> {
+class _editProfileState extends State<editProfile> {
   XFile? _image;
 
   Future<void> _openGallery() async {
@@ -41,14 +41,14 @@ class _addPostPageState extends State<addPostPage> {
         elevation: 0,
         backgroundColor: backgroundColor,
         title: const Text(
-          "Add Post",
+          "Edit Profile",
           style: TextStyle(fontSize: 20, color: textColor),
         ),
         actions: [
           IconButton(
             onPressed: () {
               Fluttertoast.showToast(
-                msg: "You post have been posted",
+                msg: "Your profile have been updated",
                 toastLength: Toast.LENGTH_SHORT,
               );
             },
@@ -156,13 +156,140 @@ class _addPostPageState extends State<addPostPage> {
                   );
                 },
                 child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 400,
+                  width: 120,
+                  height: 120,
                   decoration: const BoxDecoration(
                       shape: BoxShape.circle, color: lightGrey),
-                  child: Image.asset(
-                    "assets/images/addpost.png",
-                    fit: BoxFit.fill,
+                  child: Image.asset("assets/images/addprofile.png"),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
+              child: TextField(
+                decoration: InputDecoration(
+                  enabled: false,
+                  hintText: "joypatel242001@gmail.com",
+                  filled: true,
+                  fillColor: trans,
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  enabled: false,
+                  hintText: "joypatel242001",
+                  filled: true,
+                  fillColor: trans,
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Enter your name",
+                  filled: true,
+                  fillColor: trans,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Enter date of birth (dd-mm-yyyy)",
+                  filled: true,
+                  fillColor: trans,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "You are identified as",
+                  filled: true,
+                  fillColor: trans,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Add your designation / job",
+                  filled: true,
+                  fillColor: trans,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Add your link",
+                  filled: true,
+                  fillColor: trans,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Add your ('state country')",
+                  filled: true,
+                  fillColor: trans,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: textColor, width: 1.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: companyColor, width: 1.0),
                   ),
                 ),
               ),
@@ -172,46 +299,10 @@ class _addPostPageState extends State<addPostPage> {
               child: TextField(
                 keyboardType: TextInputType.multiline,
                 maxLength: 200,
-                maxLines: 10,
+                maxLines: 7,
                 textAlignVertical: TextAlignVertical.top,
                 decoration: InputDecoration(
-                  hintText: "Add your caption",
-                  filled: true,
-                  fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: textColor, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: companyColor, width: 1.0),
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Add your location",
-                  filled: true,
-                  fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: textColor, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: companyColor, width: 1.0),
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLength: 100,
-                maxLines: 5,
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  hintText: "Add hashtags",
+                  hintText: "Add your bio",
                   filled: true,
                   fillColor: trans,
                   enabledBorder: OutlineInputBorder(
