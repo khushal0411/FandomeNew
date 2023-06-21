@@ -1,12 +1,59 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../constant/color.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class userProfilePage extends StatefulWidget {
   const userProfilePage({super.key});
 
   @override
   State<userProfilePage> createState() => _userProfilePageState();
+}
+
+Future<void> pushData() async{
+
+  Map<String, dynamic> updatedData = {
+    "name":"Joy Goyal",
+  "age":"92",
+  "isVerified":true,
+  "link":"test",
+  "bio":"John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
+  "profilePic":"data",
+  "location":"Toronto, ON, CA",
+  "designation":"Senior Designer",
+  "dob":"22-06-2001"
+  };
+   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+     User? user = firebaseAuth.currentUser;
+     // data updation
+// DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
+// databaseReference.child("Users").child(user!.uid.toString()).once().then((value){
+// final data= value.snapshot;
+// Object? values = data.value;
+// Map<dynamic, dynamic>? personMap = values as Map?;
+// print(personMap!.keys.first.toString());
+//  String p=user.uid.toString()+"/"+personMap!.keys.first.toString();
+// databaseReference.child('Users/$p').update(updatedData).then((value) {
+//     print('Data updated successfully $p');
+//   }).catchError((error) {
+//     print('Failed to update data: $error');
+//   });
+
+// });
+// .push().set({
+//   "name":"Khushal Goyal",
+//   "age":"22",
+//   "isVerified":true,
+//   "link":"test",
+//   "bio":"John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
+//   "profilePic":"data",
+//   "location":"Toronto, ON, CA",
+//   "designation":"Senior Designer",
+//   "dob":"22-06-2001"
+// });
 }
 
 class _userProfilePageState extends State<userProfilePage> {
@@ -41,7 +88,7 @@ class _userProfilePageState extends State<userProfilePage> {
             ),
           ),
           const IconButton(
-            onPressed: null,
+            onPressed: pushData,
             icon: Icon(
               Icons.add_a_photo_outlined,
               color: textColor,
