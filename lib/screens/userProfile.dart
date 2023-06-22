@@ -22,7 +22,7 @@ class _userProfilePageState extends State<userProfilePage> {
   String username = "";
   bool isVerified = false;
   String designation = "";
-  String location = "", bio = "", link = "", profilePic = "";
+   String location = "", bio = "", link = "", profilePic = "",email="",gender="",dob="";
 
   Future<void> userData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -31,17 +31,19 @@ class _userProfilePageState extends State<userProfilePage> {
     List<String>? user = sharedPreferences.getStringList('k');
     print(user);
     setState(() {
-      bio = user![5];
-      designation = user[7];
-      if (user![0] == "true") {
+       bio = user![6];
+      designation = user[8].toString();
+      if (user![1] == "true") {
         isVerified = true;
       }
-
-      link = user[3];
-      location = user[6];
-      name = user[4];
-      profilePic = user[2];
+      gender=user[0];
+      dob=user[2];
+      link = user[4];
+      location = user[7];
+      name = user![5];
+      profilePic = user![3];
       username = userMail!.email!.split('@')[0].toString();
+      email=userMail.email.toString();
     });
   }
 
@@ -56,12 +58,14 @@ class _userProfilePageState extends State<userProfilePage> {
     }
   }
 
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     userData();
-  }
+  } 
+  
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +81,7 @@ class _userProfilePageState extends State<userProfilePage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushReplacement(context,
+              Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const editProfile()));
             },
             icon: const Icon(
@@ -88,7 +92,8 @@ class _userProfilePageState extends State<userProfilePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushReplacement(context,
+              Navigator.pop(context);
+              Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const addPostPage()));
             },
             icon: Icon(
@@ -171,6 +176,16 @@ class _userProfilePageState extends State<userProfilePage> {
                   children: [
                     Row(
                       children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 0, right: 5, bottom: 0, top: 0),
+                            child: Visibility(
+                              visible: isVerified,
+                              child: Icon(
+                                Icons.verified,
+                                color: Colors.blue,
+                              ),
+                            )),
                         Container(
                           width: 180,
                           height: 25,
@@ -193,37 +208,39 @@ class _userProfilePageState extends State<userProfilePage> {
                             ),
                           ),
                         ),
-                        Padding(
-                            padding: EdgeInsets.only(
-                                left: 0, right: 10, bottom: 0, top: 0),
-                            child: Visibility(
-                              visible: isVerified,
-                              child: Icon(
-                                Icons.verified,
-                                color: Colors.blue,
-                              ),
-                            )),
+                      
                       ],
                     ),
-                    Container(
-                      width: 170,
-                      height: 25,
-                      child: TextField(
-                        maxLength: 40,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-                          enabled: false,
-                          labelText: designation,
-                          counterText: '',
-                          labelStyle: TextStyle(
-                            fontSize: 13,
-                            color: darkGrey,
-                          ),
-                          disabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.transparent),
+                    Row(
+                      children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 0, right: 5, bottom: 0, top: 0),
+                            child: Icon(
+                              Icons.badge_outlined,
+                              color: lightGrey,
+                            )),
+                        Container(
+                          width: 170,
+                          height: 25,
+                          child: TextField(
+                            maxLength: 40,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(vertical: 0.0),
+                              enabled: false,
+                              labelText: designation,
+                              counterText: '',
+                              labelStyle: TextStyle(
+                                fontSize: 13,
+                                color: darkGrey,
+                              ),
+                              disabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.transparent),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                     Row(
                       children: [

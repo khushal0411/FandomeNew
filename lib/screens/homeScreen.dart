@@ -96,6 +96,8 @@ sharedPreferences.setStringList("k", stringList);
   @override
   Widget build(BuildContext context) {
     pushData();
+    
+    
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: _children[_selectedIndex],

@@ -34,196 +34,202 @@ class _addPostPageState extends State<addPostPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        elevation: 0,
+    return WillPopScope(
+      onWillPop: ()async {
+        Navigator.pop(context);
+        return true;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
         backgroundColor: backgroundColor,
-        title: const Text(
-          "Add Post",
-          style: TextStyle(fontSize: 20, color: textColor),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Fluttertoast.showToast(
-                msg: "You post have been posted",
-                toastLength: Toast.LENGTH_SHORT,
-              );
-            },
-            icon: const Icon(
-              Icons.done,
-              color: textColor,
-              size: 30,
-            ),
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: backgroundColor,
+          title: const Text(
+            "Add Post",
+            style: TextStyle(fontSize: 20, color: textColor),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    backgroundColor: backgroundColor,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        child: Column(
-                          children: [
-                            Center(
-                                child: Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Container(
-                                height: 5,
-                                width: 80,
-                                decoration: const BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    color: lightGrey,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                              ),
-                            )),
-                            GestureDetector(
-                              onTap: _openGallery,
-                              child: const Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 35,
-                                        left: 20,
-                                        right: 10,
-                                        bottom: 10),
-                                    child: Icon(
-                                      Icons.photo_library_outlined,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 35,
-                                        left: 0,
-                                        right: 10,
-                                        bottom: 10),
-                                    child: Text(
-                                      "Select image from gallery",
-                                      style: TextStyle(
-                                          color: textColor, fontSize: 18),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: _openCamera,
-                              child: const Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 15,
-                                        left: 20,
-                                        right: 10,
-                                        bottom: 10),
-                                    child: Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 15,
-                                        left: 0,
-                                        right: 10,
-                                        bottom: 10),
-                                    child: Text(
-                                      "Capture image from camera",
-                                      style: TextStyle(
-                                          color: textColor, fontSize: 18),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 400,
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle, color: lightGrey),
-                  child: Image.asset(
-                    "assets/images/addpost.png",
-                    fit: BoxFit.fill,
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLength: 200,
-                maxLines: 10,
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  hintText: "Add your caption",
-                  filled: true,
-                  fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: textColor, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: companyColor, width: 1.0),
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Add your location",
-                  filled: true,
-                  fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: textColor, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: companyColor, width: 1.0),
-                  ),
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLength: 100,
-                maxLines: 5,
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  hintText: "Add hashtags",
-                  filled: true,
-                  fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: textColor, width: 1.0),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: companyColor, width: 1.0),
-                  ),
-                ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Fluttertoast.showToast(
+                  msg: "You post have been posted",
+                  toastLength: Toast.LENGTH_SHORT,
+                );
+              },
+              icon: const Icon(
+                Icons.done,
+                color: textColor,
+                size: 30,
               ),
             ),
           ],
+        ),
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      backgroundColor: backgroundColor,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Column(
+                            children: [
+                              Center(
+                                  child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Container(
+                                  height: 5,
+                                  width: 80,
+                                  decoration: const BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: lightGrey,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10))),
+                                ),
+                              )),
+                              GestureDetector(
+                                onTap: _openGallery,
+                                child: const Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 35,
+                                          left: 20,
+                                          right: 10,
+                                          bottom: 10),
+                                      child: Icon(
+                                        Icons.photo_library_outlined,
+                                        size: 30,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 35,
+                                          left: 0,
+                                          right: 10,
+                                          bottom: 10),
+                                      child: Text(
+                                        "Select image from gallery",
+                                        style: TextStyle(
+                                            color: textColor, fontSize: 18),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: _openCamera,
+                                child: const Row(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 15,
+                                          left: 20,
+                                          right: 10,
+                                          bottom: 10),
+                                      child: Icon(
+                                        Icons.camera_alt_outlined,
+                                        size: 30,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 15,
+                                          left: 0,
+                                          right: 10,
+                                          bottom: 10),
+                                      child: Text(
+                                        "Capture image from camera",
+                                        style: TextStyle(
+                                            color: textColor, fontSize: 18),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 400,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: lightGrey),
+                    child: Image.asset(
+                      "assets/images/addpost.png",
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLength: 200,
+                  maxLines: 10,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(
+                    hintText: "Add your caption",
+                    filled: true,
+                    fillColor: trans,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: textColor, width: 1.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: companyColor, width: 1.0),
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Add your location",
+                    filled: true,
+                    fillColor: trans,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: textColor, width: 1.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: companyColor, width: 1.0),
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLength: 100,
+                  maxLines: 5,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(
+                    hintText: "Add hashtags",
+                    filled: true,
+                    fillColor: trans,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: textColor, width: 1.0),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: companyColor, width: 1.0),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
