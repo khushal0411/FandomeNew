@@ -17,6 +17,8 @@ class _signUpState extends State<signUp> {
   String password = "";
   String confPassword = "";
   String output = "";
+  bool blockText = true;
+  bool blockText_ = true;
 
   Future<void> signUpFirebase() async {
     if (email.isEmpty) {
@@ -128,9 +130,21 @@ class _signUpState extends State<signUp> {
                 onChanged: (value) => setState(() {
                   password = value;
                 }),
-                obscureText: true,
+                obscureText: blockText,
                 decoration: InputDecoration(
                   hintText: "Create your password",
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        blockText = !blockText;
+                      });
+                    },
+                    child: Icon(
+                      blockText
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                  ),
                   filled: true,
                   fillColor: trans,
                   enabledBorder: OutlineInputBorder(
@@ -148,9 +162,21 @@ class _signUpState extends State<signUp> {
                 onChanged: (value) => setState(() {
                   confPassword = value;
                 }),
-                obscureText: true,
+                obscureText: blockText_,
                 decoration: InputDecoration(
                   hintText: "Confirm password",
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        blockText_ = !blockText_;
+                      });
+                    },
+                    child: Icon(
+                      blockText_
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
+                  ),
                   filled: true,
                   fillColor: trans,
                   enabledBorder: OutlineInputBorder(

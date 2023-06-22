@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +17,7 @@ class signIn extends StatefulWidget {
 class _signInState extends State<signIn> {
   String email = "";
   String password = "";
+  bool blockText = true;
 
   Future<void> signInFirebase() async {
     if (email.isEmpty) {
@@ -107,9 +110,21 @@ class _signInState extends State<signIn> {
               onChanged: (value) => setState(() {
                 password = value;
               }),
-              obscureText: true,
+              obscureText: blockText,
               decoration: InputDecoration(
                 hintText: "Enter your password",
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      blockText = !blockText;
+                    });
+                  },
+                  child: Icon(
+                    blockText
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
+                ),
                 filled: true,
                 fillColor: trans,
                 enabledBorder: OutlineInputBorder(

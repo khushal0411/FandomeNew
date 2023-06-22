@@ -1,70 +1,76 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/screens/editProfile.dart';
-
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../constant/color.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class userProfilePage extends StatefulWidget {
   const userProfilePage({super.key});
-  
 
   @override
   State<userProfilePage> createState() => _userProfilePageState();
-  
-  
 }
-
 
 class _userProfilePageState extends State<userProfilePage> {
-   String name="";
-  String username="";
-  bool isVerified= false;
-  String designation="";
-  String location="",bio="", link="",profilePic="";
+  String name = "";
+  String username = "";
+  bool isVerified = false;
+  String designation = "";
+  String location = "", bio = "", link = "", profilePic = "";
 
-Future<void> userData() async{
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  User? userMail = firebaseAuth.currentUser;
-  SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
-  List<String>? user= sharedPreferences.getStringList('k');
-  print(user);
-  setState(() {
-    bio=user![5];
-designation=user[7];
-if(user![0]=="true"){
-isVerified=true;
-}
+  Future<void> userData() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? userMail = firebaseAuth.currentUser;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    List<String>? user = sharedPreferences.getStringList('k');
+    print(user);
+    setState(() {
+      bio = user![5];
+      designation = user[7];
+      if (user![0] == "true") {
+        isVerified = true;
+      }
 
-link=user[3];
-location=user[6];
-name=user[4];
-profilePic=user[2];
-username=userMail!.email!.split('@')[0].toString();
+      link = user[3];
+      location = user[6];
+      name = user[4];
+      profilePic = user[2];
+      username = userMail!.email!.split('@')[0].toString();
+    });
+  }
 
-  });
-  
-}
+  Future<void> launchURL() async {
+    final Uri url = Uri.parse(link);
+    if (await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      Fluttertoast.showToast(
+          msg: "Opening URL: $link", toastLength: Toast.LENGTH_SHORT);
+    } else {
+      Fluttertoast.showToast(
+          msg: "Could not open URL", toastLength: Toast.LENGTH_SHORT);
+    }
+  }
 
-@override
-void initState() {
+  @override
+  void initState() {
     // TODO: implement initState
     super.initState();
     userData();
   }
+
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: backgroundColor,
-        title:  Text(
+        title: Text(
           username,
           style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
         ),
@@ -154,50 +160,68 @@ void initState() {
                     height: 120,
                     decoration: const BoxDecoration(
                         shape: BoxShape.circle, color: lightGrey),
-                    child: CircleAvatar(radius: 100,backgroundImage: NetworkImage(profilePic),
-                    ),
+                    child: CircleAvatar(
+                      radius: 100,
+                      backgroundImage: NetworkImage(profilePic),
                     ),
                   ),
-                
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: 0.0, right: 5, bottom: 0, top: 0),
-                          child: Text(
-                            name,
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: textColor),
+                        Container(
+                          width: 180,
+                          height: 25,
+                          child: TextField(
+                            maxLength: 40,
+                            decoration: InputDecoration(
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 0.0),
+                              enabled: false,
+                              labelText: name,
+                              counterText: '',
+                              labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  color: textColor,
+                                  fontWeight: FontWeight.bold),
+                              disabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.transparent),
+                              ),
+                            ),
                           ),
                         ),
-                         
                         Padding(
                             padding: EdgeInsets.only(
                                 left: 0, right: 10, bottom: 0, top: 0),
-                               
                             child: Visibility(
                               visible: isVerified,
                               child: Icon(
                                 Icons.verified,
                                 color: Colors.blue,
-                                
                               ),
                             )),
                       ],
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: 0.0, right: 10, bottom: 0, top: 0),
-                      child: Text(
-                        designation,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: darkGrey,
+                    Container(
+                      width: 170,
+                      height: 25,
+                      child: TextField(
+                        maxLength: 40,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0.0),
+                          enabled: false,
+                          labelText: designation,
+                          counterText: '',
+                          labelStyle: TextStyle(
+                            fontSize: 13,
+                            color: darkGrey,
+                          ),
+                          disabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
                         ),
                       ),
                     ),
@@ -207,17 +231,28 @@ void initState() {
                             padding: EdgeInsets.only(
                                 left: 0.0, right: 5.0, bottom: 0, top: 0),
                             child: Icon(
-                              Icons.pin_drop_outlined,
+                              Icons.location_on_outlined,
                               color: darkGrey,
                             )),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: 0.0, right: 10, bottom: 0, top: 0),
-                          child: Text(
-                           location,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: darkGrey,
+                        Container(
+                          width: 170,
+                          height: 30,
+                          child: TextField(
+                            maxLength: 40,
+                            decoration: InputDecoration(
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 0.0),
+                              enabled: false,
+                              labelText: location,
+                              counterText: '',
+                              labelStyle: TextStyle(
+                                fontSize: 13,
+                                color: darkGrey,
+                              ),
+                              disabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.transparent),
+                              ),
                             ),
                           ),
                         ),
@@ -227,14 +262,14 @@ void initState() {
                 ),
               ],
             ),
-             Padding(
+            Padding(
               padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 5.0),
               child: Text(
                 bio,
                 style: TextStyle(color: textColor, fontSize: 15),
               ),
             ),
-             Row(
+            Row(
               children: [
                 Padding(
                     padding:
@@ -244,13 +279,31 @@ void initState() {
                       color: Color.fromARGB(255, 38, 102, 154),
                     )),
                 Padding(
-                  padding: EdgeInsets.only(left: 5.0, right: 10.0, bottom: 5.0),
-                  child: Text(
-                    link,
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 38, 102, 154),
-                        fontSize: 15,
-                        decoration: TextDecoration.underline),
+                  padding: const EdgeInsets.only(left: 5.0, bottom: 5.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      launchURL();
+                    },
+                    child: Container(
+                      width: 300,
+                      height: 20,
+                      child: TextField(
+                        maxLength: 40,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(vertical: 0.0),
+                          enabled: false,
+                          labelText: link,
+                          counterText: '',
+                          labelStyle: TextStyle(
+                              color: Color.fromARGB(255, 38, 102, 154),
+                              fontSize: 15,
+                              decoration: TextDecoration.underline),
+                          disabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
