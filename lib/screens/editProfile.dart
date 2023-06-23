@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/homeScreen.dart';
-import 'package:testproj/screens/userProfile.dart';
 
 import '../constant/color.dart';
 
@@ -18,12 +17,18 @@ class editProfile extends StatefulWidget {
 
 class _editProfileState extends State<editProfile> {
   XFile? _image;
+
   String name = "";
   String username = "";
   bool isVerified = false;
   String designation = "";
-  String location = "", bio = "", link = "", profilePic = "",email="",gender="",dob="";
-
+  String location = "",
+      bio = "",
+      link = "",
+      profilePic = "",
+      email = "",
+      gender = "",
+      dob = "";
 
   Future<void> userData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -37,85 +42,93 @@ class _editProfileState extends State<editProfile> {
       if (user![1] == "true") {
         isVerified = true;
       }
-      gender=user[0];
-      dob=user[2];
+      gender = user[0];
+      dob = user[2];
       link = user[4];
       location = user[7];
       name = user![5];
       profilePic = user![3];
       username = userMail!.email!.split('@')[0].toString();
-      email=userMail.email.toString();
-    
+      email = userMail.email.toString();
     });
   }
 
-Future<void> updateUserData() async{
-FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-User? user = firebaseAuth.currentUser;
-  // data updation
-DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
-databaseReference.child("Users").child(user!.uid.toString()).once().then((value){
-final data= value.snapshot;
-Object? values = data.value;
-Map<dynamic, dynamic>? personMap = values as Map?;
-print(personMap!.keys.first.toString());
-String p=user.uid.toString()+"/"+personMap!.keys.first.toString();
-databaseReference.child('Users/$p').once().then((value) async {
-final data= value.snapshot;
-Object? values = data.value;
-Map<dynamic, dynamic>? profileData = values as Map?;
-List l= profileData!.values.toList() ;
-print(l.toString());
-SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-List<String> stringList=l.map((item) => item.toString()).toList();
-print(stringList);
-sharedPreferences.setStringList("k", stringList);
-
-});});
-
-
-
+  Future<void> updateUserData() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("Users")
+        .child(user!.uid.toString())
+        .once()
+        .then((value) {
+      final data = value.snapshot;
+      Object? values = data.value;
+      Map<dynamic, dynamic>? personMap = values as Map?;
+      print(personMap!.keys.first.toString());
+      String p = user.uid.toString() + "/" + personMap!.keys.first.toString();
+      databaseReference.child('Users/$p').once().then((value) async {
+        final data = value.snapshot;
+        Object? values = data.value;
+        Map<dynamic, dynamic>? profileData = values as Map?;
+        List l = profileData!.values.toList();
+        print(l.toString());
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        List<String> stringList = l.map((item) => item.toString()).toList();
+        print(stringList);
+        sharedPreferences.setStringList("k", stringList);
+      });
+    });
   }
+
   Future<void> updateData() async {
-  Map<String, dynamic> updatedData = {
-    "name":name,
-    "age": "92",
-    "isVerified": true,
-    "link": link,
-    "bio":
-        bio,
-    "profilePic": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
-    "location": location,
-    "designation": designation,
-    "dob": dob,
-    "gender":gender
-  };
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  User? user = firebaseAuth.currentUser;
-  // data updation
-DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
-databaseReference.child("Users").child(user!.uid.toString()).once().then((value){
-final data= value.snapshot;
-Object? values = data.value;
-Map<dynamic, dynamic>? personMap = values as Map?;
-print(personMap!.keys.first.toString());
-String p=user.uid.toString()+"/"+personMap!.keys.first.toString();
+    Map<String, dynamic> updatedData = {
+      "name": name,
+      "age": "92",
+      "isVerified": true,
+      "link": link,
+      "bio": bio,
+      "profilePic":
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
+      "location": location,
+      "designation": designation,
+      "dob": dob,
+      "gender": gender
+    };
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("Users")
+        .child(user!.uid.toString())
+        .once()
+        .then((value) {
+      final data = value.snapshot;
+      Object? values = data.value;
+      Map<dynamic, dynamic>? personMap = values as Map?;
+      print(personMap!.keys.first.toString());
+      String p = user.uid.toString() + "/" + personMap!.keys.first.toString();
 
-databaseReference.child('Users/$p').update(updatedData).then((value) {
-    Fluttertoast.showToast(msg: "Profile Updated Sucessfully.",toastLength: Toast.LENGTH_SHORT);
-    updateUserData();
-    Navigator.of(context).pop();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder:(context) =>const homeScreen()));
-  
-    //Navigator.push(context, MaterialPageRoute(builder:  (context) => const homeScreen()));
-  }).catchError((error) {
-    Fluttertoast.showToast(msg: "Error Occured while updating Data.",toastLength: Toast.LENGTH_SHORT);
-  });
+      databaseReference.child('Users/$p').update(updatedData).then((value) {
+        Fluttertoast.showToast(
+            msg: "Profile Updated Sucessfully.",
+            toastLength: Toast.LENGTH_SHORT);
+        updateUserData();
+        Navigator.of(context).pop();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const homeScreen()));
 
-});
-
-}
-
+        //Navigator.push(context, MaterialPageRoute(builder:  (context) => const homeScreen()));
+      }).catchError((error) {
+        Fluttertoast.showToast(
+            msg: "Error Occured while updating Data.",
+            toastLength: Toast.LENGTH_SHORT);
+      });
+    });
+  }
 
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();
@@ -135,9 +148,8 @@ databaseReference.child('Users/$p').update(updatedData).then((value) {
     });
   }
 
- @override
+  @override
   void initState() {
-   
     super.initState();
     userData();
   }
@@ -145,7 +157,7 @@ databaseReference.child('Users/$p').update(updatedData).then((value) {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async {
+      onWillPop: () async {
         Navigator.pop(context);
         return true;
       },
@@ -201,8 +213,8 @@ databaseReference.child('Users/$p').update(updatedData).then((value) {
                                   decoration: const BoxDecoration(
                                       shape: BoxShape.rectangle,
                                       color: lightGrey,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10))),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
                                 ),
                               )),
                               GestureDetector(
@@ -280,174 +292,155 @@ databaseReference.child('Users/$p').update(updatedData).then((value) {
                   ),
                 ),
               ),
-               Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
                 child: TextField(
+                  controller: TextEditingController(text: email),
                   decoration: InputDecoration(
                     enabled: false,
-                    hintText: email,
-                    filled: true,
+                    labelText: "Email",
                     fillColor: trans,
-                    disabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
                   ),
                 ),
               ),
-               Padding(
+              Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
+                  controller: TextEditingController(text: username),
                   decoration: InputDecoration(
                     enabled: false,
-                    hintText: username,
-                    filled: true,
+                    labelText: "Username",
                     fillColor: trans,
-                    disabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
-                  ),
-                ),
-              ),
-               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField( onChanged: (value) => setState(() {
-                  name = value;
-                }),
-              
-                  decoration: InputDecoration(
-                    hintText: name,
-                    filled: true,
-                    fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
-                  ),
-                ),
-              ),
-               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                   onChanged: (value) => setState(() {
-                  dob = value;
-                }),
-                  decoration: InputDecoration(
-                    hintText:dob,
-                    filled: true,
-                    fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
-                  ),
-                ),
-              ),
-               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                   onChanged: (value) => setState(() {
-                  gender= value;
-                }),
-                  decoration: InputDecoration(
-                    hintText: gender,
-                    filled: true,
-                    fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
-                  ),
-                ),
-              ),
-               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                   onChanged: (value) => setState(() {
-                 designation = value;
-                }),
-                  decoration: InputDecoration(
-                    hintText: designation,
-                    filled: true,
-                    fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
-                   onChanged: (value) => setState(() {
-                  link = value;
-                }),
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: name,
+                      selection: TextSelection.collapsed(offset: name.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    name = value;
+                  }),
                   decoration: InputDecoration(
-                    hintText: link,
-                    filled: true,
+                    labelText: "Name",
                     fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
-                   onChanged: (value) => setState(() {
-                  location = value;
-                }),
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: dob,
+                      selection: TextSelection.collapsed(offset: dob.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    dob = value;
+                  }),
                   decoration: InputDecoration(
-                    hintText: location,
-                    filled: true,
+                      fillColor: trans, labelText: "Date of Birth"),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: gender,
+                      selection: TextSelection.collapsed(offset: gender.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    gender = value;
+                  }),
+                  decoration: InputDecoration(
+                    labelText: "Identified As",
                     fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
                   ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
-                   onChanged: (value) => setState(() {
-                  bio = value;
-                }),
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: designation,
+                      selection:
+                          TextSelection.collapsed(offset: designation.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    designation = value;
+                  }),
+                  decoration: InputDecoration(
+                    labelText: "Designation / Job",
+                    fillColor: trans,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: link,
+                      selection: TextSelection.collapsed(offset: link.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    link = value;
+                  }),
+                  decoration: InputDecoration(
+                    labelText: "Add Link",
+                    fillColor: trans,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: location,
+                      selection:
+                          TextSelection.collapsed(offset: location.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    location = value;
+                  }),
+                  decoration: InputDecoration(
+                    labelText: "Location",
+                    fillColor: trans,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                child: TextField(
+                  controller: TextEditingController.fromValue(
+                    TextEditingValue(
+                      text: bio,
+                      selection: TextSelection.collapsed(offset: bio.length),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {
+                    bio = value;
+                  }),
                   keyboardType: TextInputType.multiline,
                   maxLength: 200,
                   maxLines: 7,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                    hintText: bio,
-                    filled: true,
+                    labelText: "Bio",
                     fillColor: trans,
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textColor, width: 1.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: companyColor, width: 1.0),
-                    ),
                   ),
                 ),
               ),

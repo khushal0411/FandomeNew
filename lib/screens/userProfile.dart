@@ -5,10 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/screens/editProfile.dart';
+import 'package:testproj/utils/enlargeImage.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import '../constant/color.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class userProfilePage extends StatefulWidget {
   const userProfilePage({super.key});
@@ -22,7 +21,15 @@ class _userProfilePageState extends State<userProfilePage> {
   String username = "";
   bool isVerified = false;
   String designation = "";
-   String location = "", bio = "", link = "", profilePic = "",email="",gender="",dob="";
+  String location = "",
+      bio = "",
+      link = "",
+      profilePic = "",
+      email = "",
+      gender = "",
+      dob = "";
+
+  bool isEnlarges = false;
 
   Future<void> userData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -31,19 +38,19 @@ class _userProfilePageState extends State<userProfilePage> {
     List<String>? user = sharedPreferences.getStringList('k');
     print(user);
     setState(() {
-       bio = user![6];
+      bio = user![6];
       designation = user[8].toString();
       if (user![1] == "true") {
         isVerified = true;
       }
-      gender=user[0];
-      dob=user[2];
+      gender = user[0];
+      dob = user[2];
       link = user[4];
       location = user[7];
       name = user![5];
       profilePic = user![3];
       username = userMail!.email!.split('@')[0].toString();
-      email=userMail.email.toString();
+      email = userMail.email.toString();
     });
   }
 
@@ -58,14 +65,12 @@ class _userProfilePageState extends State<userProfilePage> {
     }
   }
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     userData();
-  } 
-  
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,14 +165,38 @@ class _userProfilePageState extends State<userProfilePage> {
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 10.0, right: 10, bottom: 5, top: 10),
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: lightGrey),
-                    child: CircleAvatar(
-                      radius: 100,
-                      backgroundImage: NetworkImage(profilePic),
+                  child: GestureDetector(
+                    onLongPress: () {
+                      setState(() {
+                        isEnlarges = true;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              enlargeImage(profilePic: profilePic),
+                        ),
+                      );
+                    },
+                    onLongPressEnd: (_) {
+                      setState(() {
+                        isEnlarges = false;
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Hero(
+                      tag: profilePic,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle, color: lightGrey),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 100,
+                          backgroundImage: NetworkImage(profilePic),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -176,7 +205,7 @@ class _userProfilePageState extends State<userProfilePage> {
                   children: [
                     Row(
                       children: [
-                          Padding(
+                        Padding(
                             padding: EdgeInsets.only(
                                 left: 0, right: 5, bottom: 0, top: 0),
                             child: Visibility(
@@ -192,8 +221,8 @@ class _userProfilePageState extends State<userProfilePage> {
                           child: TextField(
                             maxLength: 40,
                             decoration: InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(vertical: 0.0),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 0.0, horizontal: 0),
                               enabled: false,
                               labelText: name,
                               counterText: '',
@@ -208,17 +237,16 @@ class _userProfilePageState extends State<userProfilePage> {
                             ),
                           ),
                         ),
-                      
                       ],
                     ),
                     Row(
                       children: [
-                          Padding(
+                        Padding(
                             padding: EdgeInsets.only(
                                 left: 0, right: 5, bottom: 0, top: 0),
                             child: Icon(
                               Icons.badge_outlined,
-                              color: lightGrey,
+                              color: darkGrey,
                             )),
                         Container(
                           width: 170,
@@ -226,7 +254,8 @@ class _userProfilePageState extends State<userProfilePage> {
                           child: TextField(
                             maxLength: 40,
                             decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(vertical: 0.0),
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 0.0),
                               enabled: false,
                               labelText: designation,
                               counterText: '',
@@ -235,7 +264,8 @@ class _userProfilePageState extends State<userProfilePage> {
                                 color: darkGrey,
                               ),
                               disabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.transparent),
+                                borderSide:
+                                    BorderSide(color: Colors.transparent),
                               ),
                             ),
                           ),
@@ -253,7 +283,7 @@ class _userProfilePageState extends State<userProfilePage> {
                             )),
                         Container(
                           width: 170,
-                          height: 30,
+                          height: 25,
                           child: TextField(
                             maxLength: 40,
                             decoration: InputDecoration(
