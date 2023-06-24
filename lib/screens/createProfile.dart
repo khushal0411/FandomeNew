@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +15,14 @@ import 'package:testproj/utils/customProgressDialog.dart';
 
 import '../constant/color.dart';
 
-class editProfile extends StatefulWidget {
-  const editProfile({super.key});
+class createProfile extends StatefulWidget {
+  const createProfile({super.key});
 
   @override
-  State<editProfile> createState() => _editProfileState();
+  State<createProfile> createState() => _createProfileState();
 }
 
-class _editProfileState extends State<editProfile> {
+class _createProfileState extends State<createProfile> {
   XFile? _image;
 
   String name = "";
@@ -60,21 +63,9 @@ class _editProfileState extends State<editProfile> {
   Future<void> userData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? userMail = firebaseAuth.currentUser;
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    List<String>? user = sharedPreferences.getStringList('k');
-    print(user);
+   
     setState(() {
-      bio = user![6];
-      designation = user[8];
-      if (user![1] == "true") {
-        isVerified = true;
-      }
-      gender = user[0];
-      dob = user[2];
-      link = user[4];
-      location = user[7];
-      name = user![5];
-      profilePic = user![3];
+
       username = userMail!.email!.split('@')[0].toString();
       email = userMail.email.toString();
     });
@@ -110,51 +101,32 @@ class _editProfileState extends State<editProfile> {
     });
   }
 
-  Future<void> updateData() async {
-    Map<String, dynamic> updatedData = {
-      "name": name,
-      "age": "92",
-      "isVerified": true,
-      "link": link,
-      "bio": bio,
-      "profilePic": profilePic,
-      "location": location,
-      "designation": designation,
-      "dob": dob,
-      "gender": gender
-    };
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    User? user = firebaseAuth.currentUser;
-    // data updation
-    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    databaseReference
-        .child("Users")
-        .child(user!.uid.toString())
-        .once()
-        .then((value) {
-      final data = value.snapshot;
-      Object? values = data.value;
-      Map<dynamic, dynamic>? personMap = values as Map?;
-      print(personMap!.keys.first.toString());
-      String p = user.uid.toString() + "/" + personMap!.keys.first.toString();
 
-      databaseReference.child('Users/$p').update(updatedData).then((value) {
-        Fluttertoast.showToast(
-            msg: "Profile Updated Sucessfully.",
+Future<void> createProfile() async{
+   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  User? user = firebaseAuth.currentUser;
+  DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
+databaseReference.child("Users").child(user!.uid.toString())..push().set({
+  "name":name,
+  "age":"",
+  "isVerified":true,
+  "link":link,
+  "bio":bio,
+  "profilePic":profilePic,
+  "location":location,
+  "designation":designation,
+  "dob":dob,
+  "gender":gender
+});
+Fluttertoast.showToast(
+            msg: "Profile Created Sucessfully.",
             toastLength: Toast.LENGTH_SHORT);
         updateUserData();
         Navigator.of(context).pop();
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const homeScreen()));
 
-        //Navigator.push(context, MaterialPageRoute(builder:  (context) => const homeScreen()));
-      }).catchError((error) {
-        Fluttertoast.showToast(
-            msg: "Error Occured while updating Data.",
-            toastLength: Toast.LENGTH_SHORT);
-      });
-    });
-  }
+}
 
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();
@@ -225,7 +197,7 @@ class _editProfileState extends State<editProfile> {
           actions: [
             IconButton(
               onPressed: () {
-                updateData();
+                createProfile();
                 // Fluttertoast.showToast(
                 //   msg: "Your profile have been updated",
                 //   toastLength: Toast.LENGTH_SHORT,
@@ -511,3 +483,5 @@ class _editProfileState extends State<editProfile> {
     );
   }
 }
+
+    

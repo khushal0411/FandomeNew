@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/createProfile.dart';
 import 'package:testproj/screens/homeScreen.dart';
 import 'package:testproj/screens/signin.dart';
 
@@ -42,7 +43,7 @@ class _signUpState extends State<signUp> {
           // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const homeScreen()),
+            MaterialPageRoute(builder: (context) => const createProfile()),
           );
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
