@@ -373,10 +373,14 @@ class _userProfilePageState extends State<userProfilePage> {
                   padding: const EdgeInsets.all(1.0),
                   child: Container(
                     color: lightGrey,
+                    child: Image.asset(
+                      'assets/images/$index.png',
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 );
               },
-            )
+            ),
           ],
         ),
       ),
