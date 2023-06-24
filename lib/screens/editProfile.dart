@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/homeScreen.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 import '../constant/color.dart';
 
@@ -25,7 +28,7 @@ class _editProfileState extends State<editProfile> {
   String location = "",
       bio = "",
       link = "",
-      profilePic = "",
+      profilePic ="https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Faddprofile.png?alt=media&token=5526aac0-4cef-4204-bc1c-809a694e7ed6",
       email = "",
       gender = "",
       dob = "";
@@ -90,8 +93,8 @@ class _editProfileState extends State<editProfile> {
       "isVerified": true,
       "link": link,
       "bio": bio,
-      "profilePic":
-          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80",
+      "profilePic":profilePic
+         ,
       "location": location,
       "designation": designation,
       "dob": dob,
@@ -133,19 +136,40 @@ class _editProfileState extends State<editProfile> {
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();
     var pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    //print("gallery:"+pickedImage!.path);
+      Navigator.pop(context);
+    if(pickedImage!=null){
+    uploadImageToFirestore(pickedImage!);
+
 
     setState(() {
       _image = pickedImage;
-    });
+    });}
   }
 
   Future<void> _openCamera() async {
     var imagePicker = ImagePicker();
     var takenImage = await imagePicker.pickImage(source: ImageSource.camera);
+     //print("Camera:"+takenImage!.path);
+     Navigator.pop(context);
+     if(takenImage!=null){
+     uploadImageToFirestore(takenImage!);
 
     setState(() {
       _image = takenImage;
+    });}
+  }
+
+  Future<void> uploadImageToFirestore( XFile image) async{
+    final storage=firebase_storage.FirebaseStorage.instance.ref().child("profileImages").child(email+":ProfilePic");
+    final uploadImage= storage.putFile(File(image.path));
+    final snapshot= await uploadImage.whenComplete((){});
+    final downloadUrl= await snapshot.ref.getDownloadURL();
+    setState(() {
+      profilePic=downloadUrl;
     });
+    
+
   }
 
   @override
@@ -188,266 +212,268 @@ class _editProfileState extends State<editProfile> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      backgroundColor: backgroundColor,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: Column(
-                            children: [
-                              Center(
-                                  child: Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
-                                child: Container(
-                                  height: 5,
-                                  width: 80,
-                                  decoration: const BoxDecoration(
-                                      shape: BoxShape.rectangle,
-                                      color: lightGrey,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10))),
+        body: 
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                        backgroundColor: backgroundColor,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.25,
+                            child: Column(
+                              children: [
+                                Center(
+                                    child: Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: Container(
+                                    height: 5,
+                                    width: 80,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        color: lightGrey,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10))),
+                                  ),
+                                )),
+                                GestureDetector(
+                                  onTap: _openGallery,
+                                  child: const Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 35,
+                                            left: 20,
+                                            right: 10,
+                                            bottom: 10),
+                                        child: Icon(
+                                          Icons.photo_library_outlined,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 35,
+                                            left: 0,
+                                            right: 10,
+                                            bottom: 10),
+                                        child: Text(
+                                          "Select image from gallery",
+                                          style: TextStyle(
+                                              color: textColor, fontSize: 18),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              )),
-                              GestureDetector(
-                                onTap: _openGallery,
-                                child: const Row(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 35,
-                                          left: 20,
-                                          right: 10,
-                                          bottom: 10),
-                                      child: Icon(
-                                        Icons.photo_library_outlined,
-                                        size: 30,
+                                GestureDetector(
+                                  onTap: _openCamera,
+                                  child: const Row(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 15,
+                                            left: 20,
+                                            right: 10,
+                                            bottom: 10),
+                                        child: Icon(
+                                          Icons.camera_alt_outlined,
+                                          size: 30,
+                                        ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 35,
-                                          left: 0,
-                                          right: 10,
-                                          bottom: 10),
-                                      child: Text(
-                                        "Select image from gallery",
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 18),
-                                      ),
-                                    )
-                                  ],
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 15,
+                                            left: 0,
+                                            right: 10,
+                                            bottom: 10),
+                                        child: Text(
+                                          "Capture image from camera",
+                                          style: TextStyle(
+                                              color: textColor, fontSize: 18),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              GestureDetector(
-                                onTap: _openCamera,
-                                child: const Row(
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 15,
-                                          left: 20,
-                                          right: 10,
-                                          bottom: 10),
-                                      child: Icon(
-                                        Icons.camera_alt_outlined,
-                                        size: 30,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 15,
-                                          left: 0,
-                                          right: 10,
-                                          bottom: 10),
-                                      child: Text(
-                                        "Capture image from camera",
-                                        style: TextStyle(
-                                            color: textColor, fontSize: 18),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: lightGrey),
-                    child: Image.asset("assets/images/addprofile.png"),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
-                child: TextField(
-                  controller: TextEditingController(text: email),
-                  decoration: InputDecoration(
-                    enabled: false,
-                    labelText: "Email",
-                    fillColor: trans,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController(text: username),
-                  decoration: InputDecoration(
-                    enabled: false,
-                    labelText: "Username",
-                    fillColor: trans,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: name,
-                      selection: TextSelection.collapsed(offset: name.length),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle, color: lightGrey),
+                      child: CircleAvatar(backgroundColor: Colors.white,radius: 100,backgroundImage: NetworkImage(profilePic),),
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    name = value;
-                  }),
-                  decoration: InputDecoration(
-                    labelText: "Name",
-                    fillColor: trans,
-                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: dob,
-                      selection: TextSelection.collapsed(offset: dob.length),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
+                  child: TextField(
+                    controller: TextEditingController(text: email),
+                    decoration: InputDecoration(
+                      enabled: false,
+                      labelText: "Email",
+                      fillColor: trans,
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    dob = value;
-                  }),
-                  decoration: InputDecoration(
-                      fillColor: trans, labelText: "Date of Birth"),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: gender,
-                      selection: TextSelection.collapsed(offset: gender.length),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController(text: username),
+                    decoration: InputDecoration(
+                      enabled: false,
+                      labelText: "Username",
+                      fillColor: trans,
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    gender = value;
-                  }),
-                  decoration: InputDecoration(
-                    labelText: "Identified As",
-                    fillColor: trans,
-                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: designation,
-                      selection:
-                          TextSelection.collapsed(offset: designation.length),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: name,
+                        selection: TextSelection.collapsed(offset: name.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      name = value;
+                    }),
+                    decoration: InputDecoration(
+                      labelText: "Name",
+                      fillColor: trans,
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    designation = value;
-                  }),
-                  decoration: InputDecoration(
-                    labelText: "Designation / Job",
-                    fillColor: trans,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: dob,
+                        selection: TextSelection.collapsed(offset: dob.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      dob = value;
+                    }),
+                    decoration: InputDecoration(
+                        fillColor: trans, labelText: "Date of Birth"),
                   ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: link,
-                      selection: TextSelection.collapsed(offset: link.length),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: gender,
+                        selection: TextSelection.collapsed(offset: gender.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      gender = value;
+                    }),
+                    decoration: InputDecoration(
+                      labelText: "Identified As",
+                      fillColor: trans,
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    link = value;
-                  }),
-                  decoration: InputDecoration(
-                    labelText: "Add Link",
-                    fillColor: trans,
-                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: location,
-                      selection:
-                          TextSelection.collapsed(offset: location.length),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: designation,
+                        selection:
+                            TextSelection.collapsed(offset: designation.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      designation = value;
+                    }),
+                    decoration: InputDecoration(
+                      labelText: "Designation / Job",
+                      fillColor: trans,
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    location = value;
-                  }),
-                  decoration: InputDecoration(
-                    labelText: "Location",
-                    fillColor: trans,
-                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: bio,
-                      selection: TextSelection.collapsed(offset: bio.length),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: link,
+                        selection: TextSelection.collapsed(offset: link.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      link = value;
+                    }),
+                    decoration: InputDecoration(
+                      labelText: "Add Link",
+                      fillColor: trans,
                     ),
                   ),
-                  onChanged: (value) => setState(() {
-                    bio = value;
-                  }),
-                  keyboardType: TextInputType.multiline,
-                  maxLength: 200,
-                  maxLines: 7,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    labelText: "Bio",
-                    fillColor: trans,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: location,
+                        selection:
+                            TextSelection.collapsed(offset: location.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      location = value;
+                    }),
+                    decoration: InputDecoration(
+                      labelText: "Location",
+                      fillColor: trans,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                  child: TextField(
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: bio,
+                        selection: TextSelection.collapsed(offset: bio.length),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() {
+                      bio = value;
+                    }),
+                    keyboardType: TextInputType.multiline,
+                    maxLength: 200,
+                    maxLines: 7,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      labelText: "Bio",
+                      fillColor: trans,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+      
     );
   }
 }
