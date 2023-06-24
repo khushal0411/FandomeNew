@@ -247,24 +247,26 @@ class _userProfilePageState extends State<userProfilePage> {
                               Icons.badge_outlined,
                               color: darkGrey,
                             )),
-                        Container(
-                          width: 170,
-                          height: 25,
-                          child: TextField(
-                            maxLength: 40,
-                            decoration: InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(vertical: 0.0),
-                              enabled: false,
-                              labelText: designation,
-                              counterText: '',
-                              labelStyle: TextStyle(
-                                fontSize: 13,
-                                color: darkGrey,
-                              ),
-                              disabledBorder: UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.transparent),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 0.0, right: 5.0, bottom: 0, top: 0),
+                          child: Container(
+                            width: 170,
+                            height: 20,
+                            child: TextField(
+                              maxLength: 40,
+                              decoration: InputDecoration(
+                                enabled: false,
+                                labelText: designation,
+                                counterText: '',
+                                labelStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: darkGrey,
+                                ),
+                                disabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                ),
                               ),
                             ),
                           ),
@@ -280,24 +282,26 @@ class _userProfilePageState extends State<userProfilePage> {
                               Icons.location_on_outlined,
                               color: darkGrey,
                             )),
-                        Container(
-                          width: 170,
-                          height: 25,
-                          child: TextField(
-                            maxLength: 40,
-                            decoration: InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(vertical: 0.0),
-                              enabled: false,
-                              labelText: location,
-                              counterText: '',
-                              labelStyle: TextStyle(
-                                fontSize: 13,
-                                color: darkGrey,
-                              ),
-                              disabledBorder: UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.transparent),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 0.0, right: 5.0, bottom: 0, top: 0),
+                          child: Container(
+                            width: 170,
+                            height: 20,
+                            child: TextField(
+                              maxLength: 40,
+                              decoration: InputDecoration(
+                                enabled: false,
+                                labelText: location,
+                                counterText: '',
+                                labelStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: darkGrey,
+                                ),
+                                disabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
+                                ),
                               ),
                             ),
                           ),

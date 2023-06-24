@@ -19,49 +19,52 @@ class homeScreen extends StatefulWidget {
 class _homeScreenState extends State<homeScreen> {
   int _selectedIndex = 0;
 
-Future<void> pushData() async {
-  Map<String, dynamic> updatedData = {
-    "name": "Joy Goyal",
-    "age": "92",
-    "isVerified": true,
-    "link": "test",
-    "bio":
-        "John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
-    "profilePic": "data",
-    "location": "Toronto, ON, CA",
-    "designation": "Senior Designer",
-    "dob": "22-06-2001"
-  };
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  User? user = firebaseAuth.currentUser;
-  // data updation
-DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
-databaseReference.child("Users").child(user!.uid.toString()).once().then((value){
-final data= value.snapshot;
-Object? values = data.value;
-Map<dynamic, dynamic>? personMap = values as Map?;
-print(personMap!.keys.first.toString());
- String p=user.uid.toString()+"/"+personMap!.keys.first.toString();
+  Future<void> pushData() async {
+    Map<String, dynamic> updatedData = {
+      "name": "Joy Goyal",
+      "age": "92",
+      "isVerified": true,
+      "link": "test",
+      "bio":
+          "John Doe is a highly experienced Senior Designer with a passion for creating visually stunning and impactful designs. With over 10 years of professional experience in the design industry, John has a proven track record of delivering exceptional design solutions that meet client objectives. ",
+      "profilePic": "data",
+      "location": "Toronto, ON, CA",
+      "designation": "Senior Designer",
+      "dob": "22-06-2001"
+    };
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("Users")
+        .child(user!.uid.toString())
+        .once()
+        .then((value) {
+      final data = value.snapshot;
+      Object? values = data.value;
+      Map<dynamic, dynamic>? personMap = values as Map?;
+      print(personMap!.keys.first.toString());
+      String p = user.uid.toString() + "/" + personMap!.keys.first.toString();
 // databaseReference.child('Users/$p').update(updatedData).then((value) {
 //     print('Data updated successfully $p');
 //   }).catchError((error) {
 //     print('Failed to update data: $error');
 //   });
 
-databaseReference.child('Users/$p').once().then((value) async {
-final data= value.snapshot;
-Object? values = data.value;
-Map<dynamic, dynamic>? profileData = values as Map?;
-List l= profileData!.values.toList() ;
-print(l.toString());
-SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-List<String> stringList=l.map((item) => item.toString()).toList();
-print(stringList);
-sharedPreferences.setStringList("k", stringList);
-
-});
-
-});
+      databaseReference.child('Users/$p').once().then((value) async {
+        final data = value.snapshot;
+        Object? values = data.value;
+        Map<dynamic, dynamic>? profileData = values as Map?;
+        List l = profileData!.values.toList();
+        print(l.toString());
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        List<String> stringList = l.map((item) => item.toString()).toList();
+        print(stringList);
+        sharedPreferences.setStringList("k", stringList);
+      });
+    });
 // .push().set({
 //   "name":"Khushal Goyal",
 //   "age":"22",
@@ -73,10 +76,7 @@ sharedPreferences.setStringList("k", stringList);
 //   "designation":"Senior Designer",
 //   "dob":"22-06-2001"
 // });
-}
-
-
-
+  }
 
   void _navigateBottom(int index) {
     setState(() {
@@ -96,42 +96,50 @@ sharedPreferences.setStringList("k", stringList);
   @override
   Widget build(BuildContext context) {
     pushData();
-    
-    
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: _children[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: lightGrey,
+        selectedItemColor: const Color.fromRGBO(1, 1, 1, 1),
         unselectedItemColor: const Color.fromRGBO(1, 1, 1, 1),
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        selectedIconTheme: IconThemeData(size: 25.0, fill: 1),
         currentIndex: _selectedIndex,
         iconSize: 25,
         onTap: _navigateBottom,
         backgroundColor: Colors.white,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_outlined,
-            ),
+            icon: _selectedIndex == 0
+                ? Icon(Icons.home_filled)
+                : Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore_outlined),
+            icon: _selectedIndex == 1
+                ? Icon(Icons.explore)
+                : Icon(Icons.explore_outlined),
             label: 'Explore',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.adjust_outlined),
+            icon: _selectedIndex == 2
+                ? Icon(Icons.circle)
+                : Icon(Icons.circle_outlined),
             label: 'Story',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline_rounded),
+            icon: _selectedIndex == 3
+                ? Icon(Icons.chat_bubble)
+                : Icon(Icons.chat_bubble_outline_rounded),
             label: 'Chat',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_box_outlined),
+            icon: _selectedIndex == 4
+                ? Icon(Icons.account_box)
+                : Icon(Icons.account_box_outlined),
             label: 'Profile',
           ),
         ],
