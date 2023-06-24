@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:testproj/screens/userProfile.dart';
 
 class enlargeImage extends StatelessWidget {
   final String profilePic;

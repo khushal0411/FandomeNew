@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/homeScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:testproj/utils/customProgressDialog.dart';
 
 import '../constant/color.dart';
 
@@ -35,42 +36,28 @@ class _editProfileState extends State<editProfile> {
       dob = "";
   bool _isLoading = false;
 
-  void startLoading() {
-    setState(() {
-      _isLoading = true;
-    });
+  bool isProgressDialog = true;
 
-    Future.delayed(Duration(seconds: 10), () {
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.pop(context);
-    });
-
+  void showCustomProgressDialog(BuildContext context) {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor: trans,
-            elevation: 0,
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: const Column(mainAxisSize: MainAxisSize.min, children: [
-                CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-                SizedBox(
-                  height: 16.0,
-                ),
-                Text(
-                  "Please Wait...",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                )
-              ]),
-            ),
-          );
-        });
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return customProgressDialog();
+      },
+    );
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        isProgressDialog = false;
+      });
+      closeCustomProgressDialog();
+    });
+  }
+
+  void closeCustomProgressDialog() {
+    if (isProgressDialog == false) {
+      Navigator.pop(context);
+    }
   }
 
   Future<void> userData() async {
@@ -201,6 +188,7 @@ class _editProfileState extends State<editProfile> {
   }
 
   Future<void> uploadImageToFirestore(XFile image) async {
+    showCustomProgressDialog(context);
     final storage = firebase_storage.FirebaseStorage.instance
         .ref()
         .child("profileImages")
@@ -211,6 +199,7 @@ class _editProfileState extends State<editProfile> {
     setState(() {
       profilePic = downloadUrl;
     });
+    closeCustomProgressDialog();
   }
 
   @override
@@ -365,7 +354,7 @@ class _editProfileState extends State<editProfile> {
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
                 child: TextField(
                   controller: TextEditingController(text: email),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     enabled: false,
                     labelText: "Email",
                     fillColor: trans,
@@ -376,7 +365,7 @@ class _editProfileState extends State<editProfile> {
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController(text: username),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     enabled: false,
                     labelText: "Username",
                     fillColor: trans,
@@ -395,14 +384,15 @@ class _editProfileState extends State<editProfile> {
                   onChanged: (value) => setState(() {
                     name = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Name",
                     fillColor: trans,
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(
@@ -413,12 +403,13 @@ class _editProfileState extends State<editProfile> {
                   onChanged: (value) => setState(() {
                     dob = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       fillColor: trans, labelText: "Date of Birth"),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(
@@ -429,14 +420,15 @@ class _editProfileState extends State<editProfile> {
                   onChanged: (value) => setState(() {
                     gender = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Identified As",
                     fillColor: trans,
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(
@@ -448,14 +440,15 @@ class _editProfileState extends State<editProfile> {
                   onChanged: (value) => setState(() {
                     designation = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Designation / Job",
                     fillColor: trans,
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(
@@ -466,14 +459,15 @@ class _editProfileState extends State<editProfile> {
                   onChanged: (value) => setState(() {
                     link = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Add Link",
                     fillColor: trans,
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(
@@ -485,7 +479,7 @@ class _editProfileState extends State<editProfile> {
                   onChanged: (value) => setState(() {
                     location = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Location",
                     fillColor: trans,
                   ),
@@ -507,7 +501,7 @@ class _editProfileState extends State<editProfile> {
                   maxLength: 200,
                   maxLines: 7,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: "Bio",
                     fillColor: trans,
                   ),
