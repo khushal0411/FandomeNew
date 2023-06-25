@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,7 +22,7 @@ class editProfile extends StatefulWidget {
 }
 
 class _editProfileState extends State<editProfile> {
-  XFile? _image;
+  File? _imageNew;
 
   String name = "";
   String username = "";
@@ -152,35 +153,53 @@ class _editProfileState extends State<editProfile> {
     });
   }
 
-  Future<void> _openGallery() async {
-    var imagePicker = ImagePicker();
-    var pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
-    //print("gallery:"+pickedImage!.path);
-    Navigator.pop(context);
-    if (pickedImage != null) {
-      uploadImageToFirestore(pickedImage!);
-
+  Future<void> _pickImageGallery() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      File? img = File(image.path);
+      img = await _cropImage(imageFile: img);
+      Navigator.of(context).pop();
+      uploadImageToFirestore(img!);
       setState(() {
-        _image = pickedImage;
+        _imageNew = img;
       });
+    } on PlatformException catch (e) {
+      print(e);
+      Navigator.of(context).pop();
     }
   }
 
-  Future<void> _openCamera() async {
-    var imagePicker = ImagePicker();
-    var takenImage = await imagePicker.pickImage(source: ImageSource.camera);
-    //print("Camera:"+takenImage!.path);
-    Navigator.pop(context);
-    if (takenImage != null) {
-      uploadImageToFirestore(takenImage!);
-
+  Future<void> _pickImageCamera() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+      if (image == null) return;
+      File? img = File(image.path);
+      img = await _cropImage(imageFile: img);
+      Navigator.of(context).pop();
+      uploadImageToFirestore(img!);
       setState(() {
-        _image = takenImage;
+        _imageNew = img;
       });
+    } on PlatformException catch (e) {
+      print(e);
+      Navigator.of(context).pop();
     }
   }
 
-  Future<void> uploadImageToFirestore(XFile image) async {
+  Future<File?> _cropImage({required File imageFile}) async {
+    File? croppedImage = await ImageCropper().cropImage(
+      sourcePath: imageFile.path,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+      compressQuality: 30,
+      cropStyle: CropStyle.circle,
+    );
+
+    if (croppedImage == null) return null;
+    return File(croppedImage.path);
+  }
+
+  Future<void> uploadImageToFirestore(File image) async {
     showCustomProgressDialog(context);
     final storage = firebase_storage.FirebaseStorage.instance
         .ref()
@@ -265,7 +284,7 @@ class _editProfileState extends State<editProfile> {
                                 ),
                               )),
                               GestureDetector(
-                                onTap: _openGallery,
+                                onTap: _pickImageGallery,
                                 child: const Row(
                                   children: [
                                     Padding(
@@ -295,7 +314,7 @@ class _editProfileState extends State<editProfile> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: _openCamera,
+                                onTap: _pickImageCamera,
                                 child: const Row(
                                   children: [
                                     Padding(
