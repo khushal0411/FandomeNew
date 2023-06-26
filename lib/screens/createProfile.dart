@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/homeScreen.dart';
@@ -23,7 +25,7 @@ class createProfile extends StatefulWidget {
 }
 
 class _createProfileState extends State<createProfile> {
-  XFile? _image;
+  File? _imageNew;
 
   String name = "";
   String username = "";
@@ -123,40 +125,76 @@ Fluttertoast.showToast(
             toastLength: Toast.LENGTH_SHORT);
         updateUserData();
         Navigator.of(context).pop();
-        Navigator.pushReplacement(context,
+        Navigator.push(context,
             MaterialPageRoute(builder: (context) => const homeScreen()));
+            SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+            await sharedPreferences.setBool("profile", true);
 
 }
 
-  Future<void> _openGallery() async {
-    var imagePicker = ImagePicker();
-    var pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
-    //print("gallery:"+pickedImage!.path);
-    Navigator.pop(context);
-    if (pickedImage != null) {
-      uploadImageToFirestore(pickedImage!);
+Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Set the initial date to the current date
+      firstDate: DateTime(1900), // Set the minimum date
+      lastDate: DateTime.now(), // Set the maximum date
+    );
 
+    if (picked != null) {
       setState(() {
-        _image = pickedImage;
+        print(picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString());
+        dob=picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString();
       });
     }
   }
-
-  Future<void> _openCamera() async {
-    var imagePicker = ImagePicker();
-    var takenImage = await imagePicker.pickImage(source: ImageSource.camera);
-    //print("Camera:"+takenImage!.path);
-    Navigator.pop(context);
-    if (takenImage != null) {
-      uploadImageToFirestore(takenImage!);
-
+ 
+   Future<void> _pickImageGallery() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+   
+    if (pickedFile != null) {
+       File? img = File(pickedFile!.path);
+      //uploadImageToFirestore(img);
+      File? croppedFile = await _cropImage(imageFile: img);
       setState(() {
-        _image = takenImage;
+        _imageNew = croppedFile;
       });
+
+      if (_imageNew != null) {
+        Navigator.of(context).pop();
+        uploadImageToFirestore(_imageNew!);
+      }
     }
   }
 
-  Future<void> uploadImageToFirestore(XFile image) async {
+  Future<void> _pickImageCamera() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    
+    if (pickedFile != null) {
+      File? img = File(pickedFile!.path);
+      //uploadImageToFirestore(img);
+      File? croppedFile = await _cropImage(imageFile: img);
+      setState(() {
+        _imageNew = croppedFile;
+      });
+
+      if (_imageNew != null) {
+        Navigator.of(context).pop();
+        uploadImageToFirestore(_imageNew!);
+      }
+    }
+  }
+  Future<File?> _cropImage({required File imageFile}) async {
+    File? croppedImage = await ImageCropper().cropImage(
+      sourcePath: imageFile.path,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+      cropStyle: CropStyle.circle,
+    );
+
+    if (croppedImage == null) return null;
+    return File(croppedImage.path);
+  }
+
+  Future<void> uploadImageToFirestore(File image) async {
     showCustomProgressDialog(context);
     final storage = firebase_storage.FirebaseStorage.instance
         .ref()
@@ -241,7 +279,7 @@ Fluttertoast.showToast(
                                 ),
                               )),
                               GestureDetector(
-                                onTap: _openGallery,
+                                onTap: _pickImageGallery,
                                 child: const Row(
                                   children: [
                                     Padding(
@@ -271,7 +309,7 @@ Fluttertoast.showToast(
                                 ),
                               ),
                               GestureDetector(
-                                onTap: _openCamera,
+                                onTap: _pickImageCamera,
                                 child: const Row(
                                   children: [
                                     Padding(
@@ -359,21 +397,25 @@ Fluttertoast.showToast(
                   ),
                 ),
               ),
-              Padding(
+               Padding(
                 padding:
                     const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: dob,
-                      selection: TextSelection.collapsed(offset: dob.length),
+                child: GestureDetector(
+                  onTap: () {_selectDate(context); },
+                  child: TextField(
+                    enabled: false,
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: dob,
+                        selection: TextSelection.collapsed(offset: dob.length),
+                      ),
                     ),
+                    onChanged: (value) => setState(() {
+                      dob = value;
+                    }),
+                    decoration: const InputDecoration(
+                        fillColor: trans, labelText: "Date of Birth"),
                   ),
-                  onChanged: (value) => setState(() {
-                    dob = value;
-                  }),
-                  decoration: const InputDecoration(
-                      fillColor: trans, labelText: "Date of Birth"),
                 ),
               ),
               Padding(
