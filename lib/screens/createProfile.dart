@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -51,23 +50,17 @@ class _createProfileState extends State<createProfile> {
         return customProgressDialog();
       },
     );
-   
-      
-    
   }
 
   void closeCustomProgressDialog() {
-   
-      Navigator.of(context).pop();
-
+    Navigator.of(context).pop();
   }
 
   Future<void> userData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? userMail = firebaseAuth.currentUser;
-   
-    setState(() {
 
+    setState(() {
       username = userMail!.email!.split('@')[0].toString();
       email = userMail.email.toString();
     });
@@ -103,36 +96,34 @@ class _createProfileState extends State<createProfile> {
     });
   }
 
+  Future<void> createProfile() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference.child("Users").child(user!.uid.toString())
+      ..push().set({
+        "name": name,
+        "age": "",
+        "isVerified": true,
+        "link": link,
+        "bio": bio,
+        "profilePic": profilePic,
+        "location": location,
+        "designation": designation,
+        "dob": dob,
+        "gender": gender
+      });
+    Fluttertoast.showToast(
+        msg: "Profile Created Sucessfully.", toastLength: Toast.LENGTH_SHORT);
+    updateUserData();
+    Navigator.of(context).pop();
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const homeScreen()));
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.setBool("profile", true);
+  }
 
-Future<void> createProfile() async{
-   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  User? user = firebaseAuth.currentUser;
-  DatabaseReference databaseReference=FirebaseDatabase.instance.ref();
-databaseReference.child("Users").child(user!.uid.toString())..push().set({
-  "name":name,
-  "age":"",
-  "isVerified":true,
-  "link":link,
-  "bio":bio,
-  "profilePic":profilePic,
-  "location":location,
-  "designation":designation,
-  "dob":dob,
-  "gender":gender
-});
-Fluttertoast.showToast(
-            msg: "Profile Created Sucessfully.",
-            toastLength: Toast.LENGTH_SHORT);
-        updateUserData();
-        Navigator.of(context).pop();
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const homeScreen()));
-            SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
-            await sharedPreferences.setBool("profile", true);
-
-}
-
-Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(), // Set the initial date to the current date
@@ -142,33 +133,24 @@ Future<void> _selectDate(BuildContext context) async {
 
     if (picked != null) {
       setState(() {
-        print(picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString());
-        dob=picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString();
+        print(picked.day.toString() +
+            "-" +
+            picked.month.toString() +
+            "-" +
+            picked.year.toString());
+        dob = picked.day.toString() +
+            "-" +
+            picked.month.toString() +
+            "-" +
+            picked.year.toString();
       });
     }
   }
- 
-   Future<void> _pickImageGallery() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-   
-    if (pickedFile != null) {
-       File? img = File(pickedFile!.path);
-      //uploadImageToFirestore(img);
-      File? croppedFile = await _cropImage(imageFile: img);
-      setState(() {
-        _imageNew = croppedFile;
-      });
 
-      if (_imageNew != null) {
-        Navigator.of(context).pop();
-        uploadImageToFirestore(_imageNew!);
-      }
-    }
-  }
+  Future<void> _pickImageGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
-  Future<void> _pickImageCamera() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-    
     if (pickedFile != null) {
       File? img = File(pickedFile!.path);
       //uploadImageToFirestore(img);
@@ -183,6 +165,26 @@ Future<void> _selectDate(BuildContext context) async {
       }
     }
   }
+
+  Future<void> _pickImageCamera() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      File? img = File(pickedFile!.path);
+      //uploadImageToFirestore(img);
+      File? croppedFile = await _cropImage(imageFile: img);
+      setState(() {
+        _imageNew = croppedFile;
+      });
+
+      if (_imageNew != null) {
+        Navigator.of(context).pop();
+        uploadImageToFirestore(_imageNew!);
+      }
+    }
+  }
+
   Future<File?> _cropImage({required File imageFile}) async {
     File? croppedImage = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
@@ -392,31 +394,93 @@ Future<void> _selectDate(BuildContext context) async {
                     name = value;
                   }),
                   decoration: const InputDecoration(
-                    labelText: "Name",
-                    fillColor: trans,
-                  ),
+                      labelText: "Name",
+                      fillColor: trans,
+                      suffixText: "* Required",
+                      suffixStyle:
+                          TextStyle(color: Color.fromARGB(255, 133, 11, 0))),
                 ),
               ),
-               Padding(
-                padding:
-                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: GestureDetector(
-                  onTap: () {_selectDate(context); },
-                  child: TextField(
-                    enabled: false,
-                    controller: TextEditingController.fromValue(
-                      TextEditingValue(
-                        text: dob,
-                        selection: TextSelection.collapsed(offset: dob.length),
+              Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: TextField(
+                          enabled: false,
+                          controller: TextEditingController.fromValue(
+                            TextEditingValue(
+                              text: dob,
+                              selection:
+                                  TextSelection.collapsed(offset: dob.length),
+                            ),
+                          ),
+                          onChanged: (value) => setState(() {
+                            dob = value;
+                          }),
+                          decoration: const InputDecoration(
+                            fillColor: trans,
+                            suffixText: "* Required",
+                            suffixStyle: TextStyle(
+                                color: Color.fromARGB(255, 133, 11, 0)),
+                            labelText: "Date of Birth",
+                            labelStyle: TextStyle(
+                              color: textColor,
+                            ),
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                          ),
+                          style: TextStyle(color: textColor),
+                        ),
                       ),
                     ),
-                    onChanged: (value) => setState(() {
-                      dob = value;
-                    }),
-                    decoration: const InputDecoration(
-                        fillColor: trans, labelText: "Date of Birth"),
                   ),
-                ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: TextField(
+                          enabled: false,
+                          controller: TextEditingController.fromValue(
+                            TextEditingValue(
+                              text: dob,
+                              selection:
+                                  TextSelection.collapsed(offset: dob.length),
+                            ),
+                          ),
+                          onChanged: (value) => setState(() {
+                            dob = value;
+                          }),
+                          decoration: const InputDecoration(
+                            fillColor: trans,
+                            labelText: "Age",
+                            labelStyle: TextStyle(
+                              color: textColor,
+                            ),
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                          ),
+                          style: TextStyle(color: textColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding:
@@ -432,9 +496,11 @@ Future<void> _selectDate(BuildContext context) async {
                     gender = value;
                   }),
                   decoration: const InputDecoration(
-                    labelText: "Identified As",
-                    fillColor: trans,
-                  ),
+                      labelText: "Identified As",
+                      fillColor: trans,
+                      suffixText: "* Required",
+                      suffixStyle:
+                          TextStyle(color: Color.fromARGB(255, 133, 11, 0))),
                 ),
               ),
               Padding(
@@ -491,9 +557,11 @@ Future<void> _selectDate(BuildContext context) async {
                     location = value;
                   }),
                   decoration: const InputDecoration(
-                    labelText: "Location",
-                    fillColor: trans,
-                  ),
+                      labelText: "Location",
+                      fillColor: trans,
+                      suffixText: "* Required",
+                      suffixStyle:
+                          TextStyle(color: Color.fromARGB(255, 133, 11, 0))),
                 ),
               ),
               Padding(
@@ -509,12 +577,13 @@ Future<void> _selectDate(BuildContext context) async {
                     bio = value;
                   }),
                   keyboardType: TextInputType.multiline,
-                  maxLength: 200,
-                  maxLines: 7,
+                  maxLength: 150,
+                  maxLines: 4,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: const InputDecoration(
                     labelText: "Bio",
                     fillColor: trans,
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                 ),
               ),
@@ -525,5 +594,3 @@ Future<void> _selectDate(BuildContext context) async {
     );
   }
 }
-
-    

@@ -13,7 +13,6 @@ import 'package:testproj/screens/homeScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:testproj/utils/customProgressDialog.dart';
 
-
 import '../constant/color.dart';
 
 class editProfile extends StatefulWidget {
@@ -25,7 +24,6 @@ class editProfile extends StatefulWidget {
 
 class _editProfileState extends State<editProfile> {
   File? _imageNew;
-  
 
   String name = "";
   String username = "";
@@ -156,8 +154,7 @@ class _editProfileState extends State<editProfile> {
     });
   }
 
-
-   Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(), // Set the initial date to the current date
@@ -167,34 +164,24 @@ class _editProfileState extends State<editProfile> {
 
     if (picked != null) {
       setState(() {
-        print(picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString());
-        dob=picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString();
+        print(picked.day.toString() +
+            "-" +
+            picked.month.toString() +
+            "-" +
+            picked.year.toString());
+        dob = picked.day.toString() +
+            "-" +
+            picked.month.toString() +
+            "-" +
+            picked.year.toString();
       });
     }
   }
 
- 
-   Future<void> _pickImageGallery() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-   
-    if (pickedFile != null) {
-       File? img = File(pickedFile!.path);
-      //uploadImageToFirestore(img);
-      File? croppedFile = await _cropImage(imageFile: img);
-      setState(() {
-        _imageNew = croppedFile;
-      });
+  Future<void> _pickImageGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
-      if (_imageNew != null) {
-        Navigator.of(context).pop();
-        uploadImageToFirestore(_imageNew!);
-      }
-    }
-  }
-
-  Future<void> _pickImageCamera() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-    
     if (pickedFile != null) {
       File? img = File(pickedFile!.path);
       //uploadImageToFirestore(img);
@@ -209,6 +196,26 @@ class _editProfileState extends State<editProfile> {
       }
     }
   }
+
+  Future<void> _pickImageCamera() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      File? img = File(pickedFile!.path);
+      //uploadImageToFirestore(img);
+      File? croppedFile = await _cropImage(imageFile: img);
+      setState(() {
+        _imageNew = croppedFile;
+      });
+
+      if (_imageNew != null) {
+        Navigator.of(context).pop();
+        uploadImageToFirestore(_imageNew!);
+      }
+    }
+  }
+
   Future<File?> _cropImage({required File imageFile}) async {
     File? croppedImage = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
@@ -219,8 +226,6 @@ class _editProfileState extends State<editProfile> {
     if (croppedImage == null) return null;
     return File(croppedImage.path);
   }
-
-
 
   Future<void> uploadImageToFirestore(File image) async {
     showCustomProgressDialog(context);
@@ -420,31 +425,93 @@ class _editProfileState extends State<editProfile> {
                     name = value;
                   }),
                   decoration: const InputDecoration(
-                    labelText: "Name",
-                    fillColor: trans,
-                  ),
+                      labelText: "Name",
+                      fillColor: trans,
+                      suffixText: "* Required",
+                      suffixStyle:
+                          TextStyle(color: Color.fromARGB(255, 133, 11, 0))),
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: GestureDetector(
-                  onTap: () {_selectDate(context); },
-                  child: TextField(
-                    enabled: false,
-                    controller: TextEditingController.fromValue(
-                      TextEditingValue(
-                        text: dob,
-                        selection: TextSelection.collapsed(offset: dob.length),
+              Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: TextField(
+                          enabled: false,
+                          controller: TextEditingController.fromValue(
+                            TextEditingValue(
+                              text: dob,
+                              selection:
+                                  TextSelection.collapsed(offset: dob.length),
+                            ),
+                          ),
+                          onChanged: (value) => setState(() {
+                            dob = value;
+                          }),
+                          decoration: const InputDecoration(
+                            fillColor: trans,
+                            suffixText: "* Required",
+                            suffixStyle: TextStyle(
+                                color: Color.fromARGB(255, 133, 11, 0)),
+                            labelText: "Date of Birth",
+                            labelStyle: TextStyle(
+                              color: textColor,
+                            ),
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                          ),
+                          style: TextStyle(color: textColor),
+                        ),
                       ),
                     ),
-                    onChanged: (value) => setState(() {
-                      dob = value;
-                    }),
-                    decoration: const InputDecoration(
-                        fillColor: trans, labelText: "Date of Birth"),
                   ),
-                ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 10),
+                      child: GestureDetector(
+                        onTap: () {
+                          _selectDate(context);
+                        },
+                        child: TextField(
+                          enabled: false,
+                          controller: TextEditingController.fromValue(
+                            TextEditingValue(
+                              text: dob,
+                              selection:
+                                  TextSelection.collapsed(offset: dob.length),
+                            ),
+                          ),
+                          onChanged: (value) => setState(() {
+                            dob = value;
+                          }),
+                          decoration: const InputDecoration(
+                            fillColor: trans,
+                            labelText: "Age",
+                            labelStyle: TextStyle(
+                              color: textColor,
+                            ),
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                          ),
+                          style: TextStyle(color: textColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Padding(
                 padding:
@@ -460,9 +527,11 @@ class _editProfileState extends State<editProfile> {
                     gender = value;
                   }),
                   decoration: const InputDecoration(
-                    labelText: "Identified As",
-                    fillColor: trans,
-                  ),
+                      labelText: "Identified As",
+                      fillColor: trans,
+                      suffixText: "* Required",
+                      suffixStyle:
+                          TextStyle(color: Color.fromARGB(255, 133, 11, 0))),
                 ),
               ),
               Padding(
@@ -519,9 +588,11 @@ class _editProfileState extends State<editProfile> {
                     location = value;
                   }),
                   decoration: const InputDecoration(
-                    labelText: "Location",
-                    fillColor: trans,
-                  ),
+                      labelText: "Location",
+                      fillColor: trans,
+                      suffixText: "* Required",
+                      suffixStyle:
+                          TextStyle(color: Color.fromARGB(255, 133, 11, 0))),
                 ),
               ),
               Padding(
@@ -537,12 +608,13 @@ class _editProfileState extends State<editProfile> {
                     bio = value;
                   }),
                   keyboardType: TextInputType.multiline,
-                  maxLength: 200,
-                  maxLines: 7,
+                  maxLength: 150,
+                  maxLines: 4,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: const InputDecoration(
                     labelText: "Bio",
                     fillColor: trans,
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
                 ),
               ),
