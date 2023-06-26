@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/homeScreen.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:testproj/utils/customProgressDialog.dart';
+
 
 import '../constant/color.dart';
 
@@ -23,6 +25,7 @@ class editProfile extends StatefulWidget {
 
 class _editProfileState extends State<editProfile> {
   File? _imageNew;
+  
 
   String name = "";
   String username = "";
@@ -153,51 +156,71 @@ class _editProfileState extends State<editProfile> {
     });
   }
 
-  Future<void> _pickImageGallery() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return;
-      File? img = File(image.path);
-      img = await _cropImage(imageFile: img);
-      Navigator.of(context).pop();
-      uploadImageToFirestore(img!);
+
+   Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(), // Set the initial date to the current date
+      firstDate: DateTime(1900), // Set the minimum date
+      lastDate: DateTime.now(), // Set the maximum date
+    );
+
+    if (picked != null) {
       setState(() {
-        _imageNew = img;
+        print(picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString());
+        dob=picked.day.toString()+"-"+picked.month.toString()+"-"+picked.year.toString();
       });
-    } on PlatformException catch (e) {
-      print(e);
-      Navigator.of(context).pop();
+    }
+  }
+
+ 
+   Future<void> _pickImageGallery() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+   
+    if (pickedFile != null) {
+       File? img = File(pickedFile!.path);
+      //uploadImageToFirestore(img);
+      File? croppedFile = await _cropImage(imageFile: img);
+      setState(() {
+        _imageNew = croppedFile;
+      });
+
+      if (_imageNew != null) {
+        Navigator.of(context).pop();
+        uploadImageToFirestore(_imageNew!);
+      }
     }
   }
 
   Future<void> _pickImageCamera() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-      if (image == null) return;
-      File? img = File(image.path);
-      img = await _cropImage(imageFile: img);
-      Navigator.of(context).pop();
-      uploadImageToFirestore(img!);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    
+    if (pickedFile != null) {
+      File? img = File(pickedFile!.path);
+      //uploadImageToFirestore(img);
+      File? croppedFile = await _cropImage(imageFile: img);
       setState(() {
-        _imageNew = img;
+        _imageNew = croppedFile;
       });
-    } on PlatformException catch (e) {
-      print(e);
-      Navigator.of(context).pop();
+
+      if (_imageNew != null) {
+        Navigator.of(context).pop();
+        uploadImageToFirestore(_imageNew!);
+      }
     }
   }
-
   Future<File?> _cropImage({required File imageFile}) async {
     File? croppedImage = await ImageCropper().cropImage(
       sourcePath: imageFile.path,
       aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-      compressQuality: 30,
       cropStyle: CropStyle.circle,
     );
 
     if (croppedImage == null) return null;
     return File(croppedImage.path);
   }
+
+
 
   Future<void> uploadImageToFirestore(File image) async {
     showCustomProgressDialog(context);
@@ -405,18 +428,22 @@ class _editProfileState extends State<editProfile> {
               Padding(
                 padding:
                     const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
-                child: TextField(
-                  controller: TextEditingController.fromValue(
-                    TextEditingValue(
-                      text: dob,
-                      selection: TextSelection.collapsed(offset: dob.length),
+                child: GestureDetector(
+                  onTap: () {_selectDate(context); },
+                  child: TextField(
+                    enabled: false,
+                    controller: TextEditingController.fromValue(
+                      TextEditingValue(
+                        text: dob,
+                        selection: TextSelection.collapsed(offset: dob.length),
+                      ),
                     ),
+                    onChanged: (value) => setState(() {
+                      dob = value;
+                    }),
+                    decoration: const InputDecoration(
+                        fillColor: trans, labelText: "Date of Birth"),
                   ),
-                  onChanged: (value) => setState(() {
-                    dob = value;
-                  }),
-                  decoration: const InputDecoration(
-                      fillColor: trans, labelText: "Date of Birth"),
                 ),
               ),
               Padding(

@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/createProfile.dart';
 import 'package:testproj/screens/homeScreen.dart';
 import 'package:testproj/screens/signin.dart';
 
@@ -16,13 +18,25 @@ class _splashScreenState extends State<splashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
       User? user = firebaseAuth.currentUser;
       if (user != null) {
-        Navigator.pushReplacement(
+        SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+        bool? check = sharedPreferences.getBool("profile");
+        if(check!=null && check==true){
+Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const homeScreen()),
         );
+        }
+        else if(check==false || check==null){
+Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const createProfile()),
+        );
+        }
+            
+        
       } else {
         Navigator.pushReplacement(
           context,

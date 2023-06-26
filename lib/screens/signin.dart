@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/homeScreen.dart';
 import 'package:testproj/screens/signupScreen.dart';
@@ -35,6 +36,8 @@ class _signInState extends State<signIn> {
             msg: "User Signed In Sucessfully.",
             toastLength: Toast.LENGTH_SHORT);
         // ignore: use_build_context_synchronously
+        SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+            await sharedPreferences.setBool("profile", true);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const homeScreen()),
