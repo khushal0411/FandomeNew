@@ -1,10 +1,12 @@
 import 'dart:ffi';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/constant/color.dart';
+import 'package:testproj/screens/createProfile.dart';
 import 'package:testproj/screens/homeScreen.dart';
 import 'package:testproj/screens/signupScreen.dart';
 
@@ -36,18 +38,43 @@ class _signInState extends State<signIn> {
             msg: "User Signed In Sucessfully.",
             toastLength: Toast.LENGTH_SHORT);
         // ignore: use_build_context_synchronously
-        SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
-            await sharedPreferences.setBool("profile", true);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const homeScreen()),
-        );
+        getUserData();
+        
       } catch (e) {
         Fluttertoast.showToast(
             msg: e.toString(), toastLength: Toast.LENGTH_SHORT);
       }
     }
   }
+    Future<void> getUserData() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("Users")
+        .child(user!.uid.toString())
+        .once()
+        .then((value) async{
+      final data = value.snapshot;
+      print(data.value.toString());
+      if(data.value!=null){
+     SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+            await sharedPreferences.setBool("profile", true);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const homeScreen()),
+        );}
+        else{
+           Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const createProfile()),
+        );
+        }
+    
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
