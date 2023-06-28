@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -182,6 +184,10 @@ isFilled=true;
     super.initState();
 checkLikes();
 likedData=widget.like;
+// code for comments display
+// List<dynamic> dataList = jsonDecode(widget.comments);
+//   List<Map<String, dynamic>> list = dataList.cast<Map<String, dynamic>>();
+//   print(list[0].values);
   }
 
   @override
