@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +15,49 @@ class addPostPage extends StatefulWidget {
 
 class _addPostPageState extends State<addPostPage> {
   XFile? _image;
+
+
+    Future<void> createPost() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference.child("Postsuser").child(user!.uid.toString())
+      .push().set({
+      "userProfilePic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
+      "userName":user.email?.split('@')[0].toString(),
+      "location":"Vadodara, Gujarat, IN",
+      "postPic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
+      "like":"[joy,Khushal,ali]",
+      "comments":"{'joy':'nice','khushal':'good'}",
+      "caption":"Beautiful life......",
+      "hashtag":"#life #enjoy",
+      "timeStamp":DateTime.now().toString()
+      });
+
+      databaseReference.child("Posts")
+      .push().set({
+      "userProfilePic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
+      "userName":user.email?.split('@')[0].toString(),
+      "location":"Vadodara, Gujarat, IN",
+      "postPic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
+      "like":"[joy,Khushal,ali]",
+      "comments":"{'joy':'nice','khushal':'good'}",
+      "caption":"Beautiful life......",
+      "hashtag":"#life #enjoy",
+      "timeStamp":DateTime.now().toString()
+      });
+
+    Fluttertoast.showToast(
+        msg: "Profile Created Sucessfully.", toastLength: Toast.LENGTH_SHORT);
+  
+  }
+
+
+
+
+
+
+
 
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();

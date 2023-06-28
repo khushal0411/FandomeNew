@@ -1,20 +1,128 @@
 
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/screens/signin.dart';
 import 'package:testproj/utils/mainPosts.dart';
+import 'package:testproj/utils/mainPosts.dart';
 
-class homePage extends StatelessWidget {
+import '../utils/mainPosts.dart';
+import '../utils/mainPosts.dart';
+
+class homePage extends StatefulWidget {
   homePage({super.key});
 
+  @override
+  State<homePage> createState() => _homePageState();
+}
+
+class _homePageState extends State<homePage> {
   final FirebaseAuth firebaseAuth= FirebaseAuth.instance;
+  List<mainPost> post=List.empty();
+Future<void> pushData() async {
+
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    databaseReference
+        .child("Users")
+        .child(user!.uid.toString())
+        .once()
+        .then((value) {
+      final data = value.snapshot;
+      Object? values = data.value;
+      Map<dynamic, dynamic>? personMap = values as Map?;
+      print(personMap!.keys.first.toString());
+      String p = user.uid.toString() + "/" + personMap!.keys.first.toString();
+
+
+      databaseReference.child('Users/$p').once().then((value) async {
+        final data = value.snapshot;
+        Object? values = data.value;
+        Map<dynamic, dynamic>? profileData = values as Map?;
+        List l = profileData!.values.toList();
+        print(l.toString());
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        List<String> stringList = l.map((item) => item.toString()).toList();
+        print(stringList);
+        sharedPreferences.setStringList("k", stringList);
+      });
+    });
+  }
+
+  
 
 
 
+
+
+
+
+  
+
+Future<void> getPost() async {
+    
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+
+      databaseReference.child('Posts').once().then((value) async {
+        final data = value.snapshot;
+        Object? values = data.value;
+        Map<dynamic, dynamic>? profileData = values as Map?;
+        
+List<mainPost> castedList = profileData!.entries.map((entry) {
+  String index = entry.key;
+  //String key = l1[index];
+  Map<dynamic, dynamic> post = entry.value as Map<dynamic, dynamic>;
+  return mainPost(
+    userName: post['userName'],
+    location: post['location'],
+    caption: post['caption'],
+    hastag: post['hashtag'],
+    comments: post['comments'].toString(),
+    like: post['like'].toString(),
+    postPic: post['postPic'],
+    timeStamp: post['timeStamp'],
+    userProfilepic: post['userProfilePic'],
+    index: index,
+  );
+}).toList();
+
+setState(() {
+  post=castedList;
+});
+
+
+print(castedList);
+        
+      });
+    
+
+  }
+
+  Future<void> refreshPage() async {
+    await Future.delayed(Duration(seconds: 2));
+
+    setState(() {
+      getPost();
+    });
+    
+  }
+
+@override
+void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPost();
+    pushData();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,46 +252,18 @@ class homePage extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 140),
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 0.0),
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      mainPost(
-                        userName: "JensonButton ",
-                        location: "ON, Toronto, Canada",
-                        caption:
-                            "Exploring the vibrant streets and diverse culture of Toronto, Canada! 🇨🇦✨",
-                        imgName: "post",
-                        hastags:
-                            "#TorontoAdventures #CityExploration #CanadianExperience #TravelMemories #TorontoBound #CulturalDiversity #UrbanGetaway",
-                      ),
-                      mainPost(
-                        userName: "MyDoggo ",
-                        location: "NYC, City of Dreams",
-                        caption:
-                            "Unleashing pure joy with my furry friend! 🐶❤️",
-                        imgName: "p1",
-                        hastags:
-                            "##DogLove #PawsomeCompanion #BestBuddy #DogLife #AdorablePooch #PuppyLove #FurBaby #HappyTails",
-                      ),
-                      mainPost(
-                        userName: "Toronto ",
-                        location: "ON, Toronto, Canada",
-                        caption:
-                            "Exploring the vibrant streets and diverse culture of Toronto, Canada! 🇨🇦✨",
-                        imgName: "p2",
-                        hastags:
-                            "#TorontoAdventures #CityExploration #CanadianExperience #TravelMemories #TorontoBound #CulturalDiversity #UrbanGetaway",
-                      ),
-                      mainPost(
-                        userName: "CIA_at_yourhome ",
-                        location: "Washinton DC",
-                        caption:
-                            "Immersed in history and awe-inspiring landmarks in Washington, D.C.! 🏛️✨ Immersed in history and awe-inspiring landmarks in Washington, D.C.! 🏛️✨ Immersed in history and awe-inspiring landmarks in Washington, D.C.! 🏛️✨ Immersed in history and awe-inspiring landmarks in Washington, D.C.! 🏛️✨ ",
-                        imgName: "p3",
-                        hastags:
-                            "#DCExploration #HistoricalWonders #MonumentalCity #CulturalHeritage #CapitalAdventures #IconicLandmarks #DiscoverDC #CityOfHistory",
-                      ),
-                    ],
+                  child: RefreshIndicator(
+                    onRefresh: refreshPage,
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: post.length,
+                      itemBuilder: (context, index) {
+                        mainPost data= post[index];
+                        print(index);
+                        return data;
+                      },
+                      
+                    ),
                   ),
                 ),
               ),
