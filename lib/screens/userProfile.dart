@@ -212,6 +212,7 @@ class _userProfilePageState extends State<userProfilePage> {
                               child: Icon(
                                 Icons.verified,
                                 color: Colors.blue,
+                                size: 20,
                               ),
                             )),
                         Container(
@@ -246,6 +247,7 @@ class _userProfilePageState extends State<userProfilePage> {
                             child: Icon(
                               Icons.badge_outlined,
                               color: darkGrey,
+                              size: 20,
                             )),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -281,6 +283,7 @@ class _userProfilePageState extends State<userProfilePage> {
                             child: Icon(
                               Icons.location_on_outlined,
                               color: darkGrey,
+                              size: 20,
                             )),
                         Padding(
                           padding: const EdgeInsets.only(

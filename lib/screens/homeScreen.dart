@@ -20,8 +20,6 @@ class homeScreen extends StatefulWidget {
 class _homeScreenState extends State<homeScreen> {
   int _selectedIndex = 0;
 
-
-
   void _navigateBottom(int index) {
     setState(() {
       _selectedIndex = index;
@@ -39,7 +37,6 @@ class _homeScreenState extends State<homeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: _children[_selectedIndex],

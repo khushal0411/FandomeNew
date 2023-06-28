@@ -1,5 +1,3 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +20,9 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
-  final FirebaseAuth firebaseAuth= FirebaseAuth.instance;
-  List<mainPost> post=List.empty();
-Future<void> pushData() async {
-
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  List<mainPost> post = List.empty();
+  Future<void> pushData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
     // data updation
@@ -40,7 +37,6 @@ Future<void> pushData() async {
       Map<dynamic, dynamic>? personMap = values as Map?;
       print(personMap!.keys.first.toString());
       String p = user.uid.toString() + "/" + personMap!.keys.first.toString();
-
 
       databaseReference.child('Users/$p').once().then((value) async {
         final data = value.snapshot;
@@ -57,54 +53,39 @@ Future<void> pushData() async {
     });
   }
 
-  
-
-
-
-
-
-
-
-  
-
-Future<void> getPost() async {
-    
+  Future<void> getPost() async {
     // data updation
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
 
-      databaseReference.child('Posts').once().then((value) async {
-        final data = value.snapshot;
-        Object? values = data.value;
-        Map<dynamic, dynamic>? profileData = values as Map?;
-        
-List<mainPost> castedList = profileData!.entries.map((entry) {
-  String index = entry.key;
-  //String key = l1[index];
-  Map<dynamic, dynamic> post = entry.value as Map<dynamic, dynamic>;
-  return mainPost(
-    userName: post['userName'],
-    location: post['location'],
-    caption: post['caption'],
-    hastag: post['hashtag'],
-    comments: post['comments'].toString(),
-    like: post['like'].toString(),
-    postPic: post['postPic'],
-    timeStamp: post['timeStamp'],
-    userProfilepic: post['userProfilePic'],
-    index: index,
-  );
-}).toList();
+    databaseReference.child('Posts').once().then((value) async {
+      final data = value.snapshot;
+      Object? values = data.value;
+      Map<dynamic, dynamic>? profileData = values as Map?;
 
-setState(() {
-  post=castedList;
-});
+      List<mainPost> castedList = profileData!.entries.map((entry) {
+        String index = entry.key;
+        //String key = l1[index];
+        Map<dynamic, dynamic> post = entry.value as Map<dynamic, dynamic>;
+        return mainPost(
+          userName: post['userName'],
+          location: post['location'],
+          caption: post['caption'],
+          hastag: post['hashtag'],
+          comments: post['comments'].toString(),
+          like: post['like'].toString(),
+          postPic: post['postPic'],
+          timeStamp: post['timeStamp'],
+          userProfilepic: post['userProfilePic'],
+          index: index,
+        );
+      }).toList();
 
-
-print(castedList);
-        
+      setState(() {
+        post = castedList;
       });
-    
 
+      print(castedList);
+    });
   }
 
   Future<void> refreshPage() async {
@@ -113,16 +94,16 @@ print(castedList);
     setState(() {
       getPost();
     });
-    
   }
 
-@override
-void initState() {
+  @override
+  void initState() {
     // TODO: implement initState
     super.initState();
     getPost();
     pushData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,19 +174,25 @@ void initState() {
                             )
                           ],
                         ),
-                        GestureDetector( onTap: () async {
-                        
-                          try{
-                            await firebaseAuth.signOut();
-                            // ignore: use_build_context_synchronously
-                            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => const signIn()),);
-                            Fluttertoast.showToast(msg: "User Signed Out Successfully.",toastLength: Toast.LENGTH_SHORT);
-                          }
-                          catch (e){
-                            Fluttertoast.showToast(msg: "Error signing out -$e",toastLength: Toast.LENGTH_SHORT);
-                          }
-
-                        },
+                        GestureDetector(
+                          onTap: () async {
+                            try {
+                              await firebaseAuth.signOut();
+                              // ignore: use_build_context_synchronously
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const signIn()),
+                              );
+                              Fluttertoast.showToast(
+                                  msg: "User Signed Out Successfully.",
+                                  toastLength: Toast.LENGTH_SHORT);
+                            } catch (e) {
+                              Fluttertoast.showToast(
+                                  msg: "Error signing out -$e",
+                                  toastLength: Toast.LENGTH_SHORT);
+                            }
+                          },
                           child: Row(
                             children: [
                               Padding(
@@ -258,11 +245,10 @@ void initState() {
                       scrollDirection: Axis.vertical,
                       itemCount: post.length,
                       itemBuilder: (context, index) {
-                        mainPost data= post[index];
+                        mainPost data = post[index];
                         print(index);
                         return data;
                       },
-                      
                     ),
                   ),
                 ),
