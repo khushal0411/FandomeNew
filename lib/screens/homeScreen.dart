@@ -78,8 +78,8 @@ class _homeScreenState extends State<homeScreen> {
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 4
-                ? Icon(Icons.account_box)
-                : Icon(Icons.account_box_outlined),
+                ? Icon(Icons.account_circle)
+                : Icon(Icons.account_circle_outlined),
             label: 'Profile',
           ),
         ],

@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/addPost.dart';
+import 'package:testproj/screens/settingsScreen.dart';
 import 'package:testproj/screens/signin.dart';
 import 'package:testproj/utils/mainPosts.dart';
 import 'package:testproj/utils/mainPosts.dart';
@@ -153,26 +154,35 @@ class _homePageState extends State<homePage> {
                                     BorderRadius.all(Radius.circular(10))),
                           ),
                         )),
-                        const Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 35, left: 20, right: 10, bottom: 10),
-                              child: Icon(
-                                Icons.settings_outlined,
-                                size: 30,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: ((context) =>
+                                        const settingsScreen())));
+                          },
+                          child: const Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: 35, left: 20, right: 10, bottom: 10),
+                                child: Icon(
+                                  Icons.settings_outlined,
+                                  size: 30,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  top: 35, left: 0, right: 10, bottom: 10),
-                              child: Text(
-                                "Settings",
-                                style:
-                                    TextStyle(color: textColor, fontSize: 18),
-                              ),
-                            )
-                          ],
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: 35, left: 0, right: 10, bottom: 10),
+                                child: Text(
+                                  "Settings",
+                                  style:
+                                      TextStyle(color: textColor, fontSize: 18),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                         GestureDetector(
                           onTap: () async {

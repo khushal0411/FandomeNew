@@ -19,7 +19,7 @@ class mainPost extends StatefulWidget {
   final String postPic;
   final String userProfilepic;
   String like;
-   String comments;
+  String comments;
   final String timeStamp;
   final String index;
 
@@ -40,15 +40,15 @@ class mainPost extends StatefulWidget {
 }
 
 class _mainPostState extends State<mainPost> {
-  String userComment="";
+  String userComment = "";
   final TransformationController _transformationController =
       TransformationController();
   bool isFilled = false;
   String likedData = "";
   bool checkLike = false;
   int _currentImageIndex = 0;
-  List<comment> commentList=[];
-  List<String> postPicList=List.empty();
+  List<comment> commentList = [];
+  List<String> postPicList = List.empty();
 
   void _resetScale() {
     _transformationController.value = Matrix4.identity();
@@ -147,16 +147,19 @@ class _mainPostState extends State<mainPost> {
   }
 
   Future<void> postComment() async {
-
-
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     List<String>? userProfile = sharedPreferences.getStringList('k');
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
-    comment data= comment(userName: user!.email!.split('@')[0].toString(), comments: userComment, profilePic:userProfile![3] , timeStamp: DateTime.now().toString());
-  
+    comment data = comment(
+        userName: user!.email!.split('@')[0].toString(),
+        comments: userComment,
+        profilePic: userProfile![3],
+        timeStamp: DateTime.now().toString());
+
     commentList.add(data);
-    List<Map<String, dynamic>> jsonList = commentList.map((comment) => comment.toJson()).toList();
+    List<Map<String, dynamic>> jsonList =
+        commentList.map((comment) => comment.toJson()).toList();
     String commentListString = jsonEncode(jsonList);
 
     Map<String, dynamic> updatedData = {"comments": commentListString};
@@ -165,7 +168,8 @@ class _mainPostState extends State<mainPost> {
     String p = widget.index;
 
     databaseReference.child('Posts/$p').update(updatedData).then((value) {
-      Fluttertoast.showToast(msg: "comment added sucessfully.", toastLength: Toast.LENGTH_SHORT);
+      Fluttertoast.showToast(
+          msg: "comment added sucessfully.", toastLength: Toast.LENGTH_SHORT);
 
       //Navigator.push(context, MaterialPageRoute(builder:  (context) => const homeScreen()));
     }).catchError((error) {
@@ -200,28 +204,25 @@ class _mainPostState extends State<mainPost> {
     checkLikes();
     likedData = widget.like;
 //code for comments display
-if(widget.comments.isNotEmpty){
-  List<dynamic> dataList = jsonDecode(widget.comments);
-  List<Map<String, dynamic>> list = dataList.cast<Map<String, dynamic>>();
-  //print(dataList);
-   List<comment> castedList = dataList.map((entry) {
-    return comment(
-      profilePic: entry["userpic"],
-      userName: entry["username"],
-      comments: entry["text"],
-      timeStamp: entry["timestamp"],
-    );
-  }).toList();
-  setState(() {
-    commentList=castedList;
-     
-  });
-}
-setState(() {
-  postPicList= widget.postPic .replaceAll(RegExp(r'[\[\]]'), '')
-                           .split(',');
-});
-  
+    if (widget.comments.isNotEmpty) {
+      List<dynamic> dataList = jsonDecode(widget.comments);
+      List<Map<String, dynamic>> list = dataList.cast<Map<String, dynamic>>();
+      //print(dataList);
+      List<comment> castedList = dataList.map((entry) {
+        return comment(
+          profilePic: entry["userpic"],
+          userName: entry["username"],
+          comments: entry["text"],
+          timeStamp: entry["timestamp"],
+        );
+      }).toList();
+      setState(() {
+        commentList = castedList;
+      });
+    }
+    setState(() {
+      postPicList = widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(',');
+    });
   }
 
   @override
@@ -274,13 +275,12 @@ setState(() {
             ],
           ),
           GestureDetector(
-            onDoubleTap:toggleIcon ,
+            onDoubleTap: toggleIcon,
             child: Container(
               width: MediaQuery.of(context).size.width,
               height: 450,
               decoration: const BoxDecoration(color: lightGrey),
-              
-                child: Stack(children: [
+              child: Stack(children: [
                 CarouselSlider(
                   options: CarouselOptions(
                     height: 450,
@@ -317,8 +317,8 @@ setState(() {
                     height: 40,
                     decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        color: Color.fromRGBO(255, 255, 255, 0.3),
-                        borderRadius: BorderRadius.circular(15)),
+                        color: Color.fromRGBO(255, 255, 255, 0.5),
+                        borderRadius: BorderRadius.circular(100)),
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(1.0),
@@ -411,14 +411,14 @@ setState(() {
                                   child: Container(
                                     height: 360,
                                     child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: commentList.length,
-                      itemBuilder: (context, index) {
-                        comment data = commentList[index];
-                        print(index);
-                        return data;
-                      },
-                    ),
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: commentList.length,
+                                      itemBuilder: (context, index) {
+                                        comment data = commentList[index];
+                                        print(index);
+                                        return data;
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
@@ -432,8 +432,8 @@ setState(() {
                                           left: 10.0, right: 0),
                                       child: TextField(
                                         onChanged: (value) => setState(() {
-                userComment = value;
-              }),
+                                          userComment = value;
+                                        }),
                                         decoration: InputDecoration(
                                             hintText: "Add your comment"),
                                       ),
@@ -442,10 +442,9 @@ setState(() {
                                   GestureDetector(
                                     onTap: postComment,
                                     child: SizedBox(
-                                      width:
-                                          MediaQuery.of(context).size.width * 0.1,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.1,
                                       child: Padding(
-                                        
                                           padding: const EdgeInsets.only(
                                               left: 0.0, right: 10),
                                           child: Icon(Icons.send_outlined)),
