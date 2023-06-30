@@ -4,9 +4,22 @@ import '../constant/color.dart';
 
 class comment extends StatefulWidget {
   final String userName;
-  final String comments;
+  final String comments, profilePic,timeStamp;
 
-  comment({required this.userName, required this.comments});
+  comment(
+    {required this.userName, 
+  required this.comments,
+  required this.profilePic,
+  required this.timeStamp});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userpic': profilePic,
+      'username': userName,
+      'text':comments,
+      'timestamp': timeStamp,
+    };
+  }
 
   @override
   State<comment> createState() => _commentState();
@@ -25,7 +38,7 @@ class _commentState extends State<comment> {
               child: CircleAvatar(
                 radius: 15,
                 backgroundColor: backgroundColor,
-                backgroundImage: AssetImage("assets/images/story.png"),
+                backgroundImage: NetworkImage(widget.profilePic),
               ),
             ),
             Padding(
@@ -50,7 +63,20 @@ class _commentState extends State<comment> {
         Padding(
           padding: EdgeInsets.only(left: 10, right: 10, top: 0),
           child: Text(
-            "11 months ago",
+            DateTime.now()
+                            .difference(DateTime.parse(widget.timeStamp))
+                            .inHours >
+                        12
+                    ? DateTime.now()
+                            .difference(DateTime.parse(widget.timeStamp))
+                            .inDays
+                            .toString() +
+                        " days ago"
+                    : DateTime.now()
+                            .difference(DateTime.parse(widget.timeStamp))
+                            .inHours
+                            .toString() +
+                        " hours ago",
             style: TextStyle(
                 color: Color.fromRGBO(150, 150, 150, 1), fontSize: 13),
           ),
