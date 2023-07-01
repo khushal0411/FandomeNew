@@ -9,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/userProfile.dart';
 import 'package:testproj/utils/comment.dart';
+import 'package:testproj/utils/postlikes.dart';
+
+import 'postlikes.dart';
 
 // ignore: camel_case_types
 class mainPost extends StatefulWidget {
@@ -49,80 +52,84 @@ class _mainPostState extends State<mainPost> {
   int _currentImageIndex = 0;
   List<comment> commentList = [];
   List<String> postPicList = List.empty();
+  String firstLikeduser="";
+  int totallikes=0;
+  
 
   void _resetScale() {
     _transformationController.value = Matrix4.identity();
   }
 
-  void toggleIcon() {
+
+  void toggleIcon(){
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    User? user = firebaseAuth.currentUser;
-    if (widget.like.isNotEmpty) {
-      List<String> likes =
-          widget.like.replaceAll(RegExp(r'[\[\]]'), '').split(',');
-      print("likes" + likes.length.toString());
-      print("original" + widget.like.length.toString());
-      if (isFilled == true) {
-        likes.remove(user!.email!.split('@')[0].toString());
-        if (likes.isEmpty) {
-          updateData("");
-          checkLike = false;
+  User? user = firebaseAuth.currentUser;
+
+  String currentUserName= user!.email!.split('@')[0].toString();
+
+      if (widget.like.isNotEmpty) {
+        List<dynamic> likeList = jsonDecode(widget.like);
+        List<postlikes> userLike= likeList.map((json) => postlikes.fromJson(json)).toList();
+      print(userLike.length);
+      userLike.remove(postlikes(username: "test"));
+      print(userLike.length);
+if (isFilled) {
+      userLike.removeWhere((like) => like.username == currentUserName);
+      if(userLike.isEmpty){
+       updateData("");
+       setState(() {
+         checkLike = false;
+         likedData="";
+       });
         } else {
-          updateData(likes.toString());
+          String updatedLikes = jsonEncode(userLike.map((like) => like.toJson()).toList());
+          updateData(updatedLikes);
           setState(() {
             checkLike = true;
+            totallikes=userLike.length;
+            firstLikeduser=userLike[0].username;
+            likedData=updatedLikes;
           });
         }
 
         setState(() {
           isFilled = !isFilled;
-          likedData = likes.toString();
+        
         });
-      } else {
-        //if(likes.length)
-        if (likes.contains(user!.email!.split('@')[0].toString()) == false) {
-          likes.add(user!.email!.split('@')[0].toString());
-          print(likes);
-          updateData(likes.toString());
-          setState(() {
-            isFilled = true;
-            likedData = likes.toString();
-            checkLike = true;
-          });
-        }
       }
-    } else {
-      List<String> likes = [];
-      if (isFilled == true) {
-        likes.remove(user!.email!.split('@')[0].toString());
-        if (likes.isEmpty) {
-          updateData("");
-          checkLike = false;
-        } else {
-          updateData(likes.toString());
-          setState(() {
-            checkLike = true;
-          });
-        }
-        setState(() {
-          isFilled = !isFilled;
-          likedData = likes.toString();
-        });
-      } else {
-        //if(likes.length)
-        if (likes.contains(user!.email!.split('@')[0].toString()) == false) {
-          likes.add(user!.email!.split('@')[0].toString());
-          print(likes);
-          updateData(likes.toString());
-          setState(() {
+      
+     else {
+      bool containsUsername = userLike.any((like) => like.username == currentUserName);
+      if (!containsUsername) {
+        userLike.add(postlikes(username: currentUserName));
+        String updatedLikes = jsonEncode(userLike.map((like) => like.toJson()).toList());
+        updateData(updatedLikes);
+         setState(() {
             isFilled = true;
-            likedData = likes.toString();
+            likedData = updatedLikes;
             checkLike = true;
+             totallikes=userLike.length;
+            firstLikeduser=userLike[0].username;
           });
         }
+      
       }
     }
-  }
+    else{
+      List<postlikes> userLike= [];
+        userLike.add(postlikes(username: currentUserName));
+        String updatedLikes = jsonEncode(userLike.map((like) => like.toJson()).toList());
+        updateData(updatedLikes);
+         setState(() {
+            isFilled = true;
+            likedData = updatedLikes;
+            checkLike = true;
+            totallikes=userLike.length;
+            firstLikeduser=userLike[0].username;
+          });
+        
+    }}
+
 
   Future<void> updateData(String likes) async {
     Map<String, dynamic> updatedData = {"like": likes};
@@ -185,16 +192,18 @@ class _mainPostState extends State<mainPost> {
   Future<void> checkLikes() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
-    List<String> likes =
-        widget.like.replaceAll(RegExp(r'[\[\]]'), '').split(',');
+    String currentUserName= user!.email!.split('@')[0].toString();
     if (widget.like.isNotEmpty) {
+      List<dynamic> likeList = jsonDecode(widget.like);
+    List<postlikes> userLike= likeList.map((json) => postlikes.fromJson(json)).toList();
       checkLike = true;
-    }
-    if (likes.contains(user!.email!.split('@')[0].toString())) {
+       totallikes=userLike.length;
+        firstLikeduser=userLike[0].username;
+    if (userLike.any((like) => like.username == currentUserName)) {
       isFilled = true;
     } else {
       isFilled = false;
-    }
+    }}
   }
 
   @override
@@ -471,16 +480,10 @@ class _mainPostState extends State<mainPost> {
             child: Padding(
               padding: EdgeInsets.only(left: 10),
               child: Text(
-                  "Liked by " +
-                      likedData
-                          .replaceAll(RegExp(r'[\[\]]'), '')
-                          .split(',')[0] +
-                      ((likedData.split(',').length) > 1
-                          ? " and " +
-                              (likedData.split(',').length - 1).toString() +
-                              " others"
-                          : ""),
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  "Liked by $firstLikeduser${totallikes > 1
+                          ? " and ${totallikes-1} others"
+                          : ""}",
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ),
           ),
           Padding(

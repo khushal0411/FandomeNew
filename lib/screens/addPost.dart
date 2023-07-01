@@ -1,8 +1,16 @@
+
+
+import 'dart:io';
+
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:testproj/screens/home.dart';
 
 import '../constant/color.dart';
 
@@ -15,45 +23,69 @@ class addPostPage extends StatefulWidget {
 
 class _addPostPageState extends State<addPostPage> {
   XFile? _image;
-
+  List<XFile?> imageList=[];
+  List<String> urlList=[];
+  String caption="",loaction="",hashtag="";
 
     Future<void> createPost() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    databaseReference.child("Postsuser").child(user!.uid.toString())
-      .push().set({
-      "userProfilePic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
-      "userName":user.email?.split('@')[0].toString(),
-      "location":"Vadodara, Gujarat, IN",
-      "postPic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
-      "like":"[joy,Khushal,ali]",
-      "comments":"{'joy':'nice','khushal':'good'}",
-      "caption":"Beautiful life......",
-      "hashtag":"#life #enjoy",
-      "timeStamp":DateTime.now().toString()
-      });
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    List<String>? userProfile = sharedPreferences.getStringList('k');
+    // databaseReference.child("Postsuser").child(user!.uid.toString())
+    //   .push().set({
+    //   "userProfilePic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
+    //   "userName":user.email?.split('@')[0].toString(),
+    //   "location":"Vadodara, Gujarat, IN",
+    //   "postPic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
+    //   "like":"[joy,Khushal,ali]",
+    //   "comments":"{'joy':'nice','khushal':'good'}",
+    //   "caption":"Beautiful life......",
+    //   "hashtag":"#life #enjoy",
+    //   "timeStamp":DateTime.now().toString()
+    //   });
+
+    for(XFile? i  in imageList){
+      uploadImageToFirestore(i!);
+    }
 
       databaseReference.child("Posts")
       .push().set({
-      "userProfilePic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
-      "userName":user.email?.split('@')[0].toString(),
-      "location":"Vadodara, Gujarat, IN",
-      "postPic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
-      "like":"[joy,Khushal,ali]",
-      "comments":"{'joy':'nice','khushal':'good'}",
-      "caption":"Beautiful life......",
-      "hashtag":"#life #enjoy",
+      "userProfilePic":userProfile![3],
+      "userName":user!.email?.split('@')[0].toString(),
+      "location":loaction,
+      "postPic": urlList.toString(),
+      "like":"",
+      "comments":"",
+      "caption":caption,
+      "hashtag":hashtag,
       "timeStamp":DateTime.now().toString()
       });
 
     Fluttertoast.showToast(
         msg: "Profile Created Sucessfully.", toastLength: Toast.LENGTH_SHORT);
+         Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const homeScreen()));
   
   }
 
 
-
+Future<void> uploadImageToFirestore(XFile image) async {
+     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    final storage = firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child("postImages")
+        .child( "ProfilePic:${user!.uid}/${DateTime.now().microsecond}");
+    final uploadImage = storage.putFile(File(image.path));
+    final snapshot = await uploadImage.whenComplete(() {});
+    final downloadUrl = await snapshot.ref.getDownloadURL();
+    setState(() {
+      urlList.add(downloadUrl);
+    });
+    
+  }
 
 
 
@@ -61,11 +93,11 @@ class _addPostPageState extends State<addPostPage> {
 
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();
-    var pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
-
+    var pickedImage = await imagePicker.pickMultiImage();
     setState(() {
-      _image = pickedImage;
+      imageList = pickedImage;
     });
+     Navigator.of(context).pop();
   }
 
   Future<void> _openCamera() async {
@@ -75,6 +107,7 @@ class _addPostPageState extends State<addPostPage> {
     setState(() {
       _image = takenImage;
     });
+     Navigator.of(context).pop();
   }
 
   @override
@@ -97,6 +130,7 @@ class _addPostPageState extends State<addPostPage> {
           actions: [
             IconButton(
               onPressed: () {
+                createPost();
                 Fluttertoast.showToast(
                   msg: "You post have been posted",
                   toastLength: Toast.LENGTH_SHORT,
@@ -217,15 +251,19 @@ class _addPostPageState extends State<addPostPage> {
                   ),
                 ),
               ),
-              const Padding(
+               Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   keyboardType: TextInputType.multiline,
                   maxLength: 200,
                   maxLines: 10,
                   textAlignVertical: TextAlignVertical.top,
+                   onChanged: (value) => setState(() {
+                    caption = value;
+                  }),
                   decoration: InputDecoration(
                     hintText: "Add your caption",
+                    
                     filled: true,
                     fillColor: trans,
                     enabledBorder: OutlineInputBorder(
@@ -237,9 +275,12 @@ class _addPostPageState extends State<addPostPage> {
                   ),
                 ),
               ),
-              const Padding(
+               Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
+                   onChanged: (value) => setState(() {
+                  loaction = value;
+                  }),
                   decoration: InputDecoration(
                     hintText: "Add your location",
                     filled: true,
@@ -253,13 +294,16 @@ class _addPostPageState extends State<addPostPage> {
                   ),
                 ),
               ),
-              const Padding(
+               Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   keyboardType: TextInputType.multiline,
                   maxLength: 100,
                   maxLines: 5,
                   textAlignVertical: TextAlignVertical.top,
+                   onChanged: (value) => setState(() {
+                    hashtag = value;
+                  }),
                   decoration: InputDecoration(
                     hintText: "Add hashtags",
                     filled: true,

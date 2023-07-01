@@ -36,7 +36,8 @@ class _editProfileState extends State<editProfile> {
           "https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Faddprofile.png?alt=media&token=5526aac0-4cef-4204-bc1c-809a694e7ed6",
       email = "",
       gender = "",
-      dob = "";
+      dob = "",
+      age="";
   bool _isLoading = false;
 
   bool isProgressDialog = true;
@@ -111,7 +112,7 @@ class _editProfileState extends State<editProfile> {
   Future<void> updateData() async {
     Map<String, dynamic> updatedData = {
       "name": name,
-      "age": "92",
+      "age": age,
       "isVerified": true,
       "link": link,
       "bio": bio,
@@ -176,6 +177,7 @@ class _editProfileState extends State<editProfile> {
             picked.year.toString();
       });
     }
+    calculateAge();
   }
 
   Future<void> _pickImageGallery() async {
@@ -247,7 +249,11 @@ class _editProfileState extends State<editProfile> {
     super.initState();
     userData();
   }
-
+Future<void> calculateAge() async{
+  int year= int.parse(dob.split('-')[2]);
+  int currentYear= DateTime.now().year.toInt();
+  age= (currentYear-year).toString();
+}
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -454,6 +460,7 @@ class _editProfileState extends State<editProfile> {
                           ),
                           onChanged: (value) => setState(() {
                             dob = value;
+                            
                           }),
                           decoration: const InputDecoration(
                             fillColor: trans,
@@ -479,35 +486,27 @@ class _editProfileState extends State<editProfile> {
                     child: Padding(
                       padding: const EdgeInsets.only(
                           left: 16.0, right: 16.0, top: 10),
-                      child: GestureDetector(
-                        onTap: () {
-                          _selectDate(context);
-                        },
-                        child: TextField(
-                          enabled: false,
-                          controller: TextEditingController.fromValue(
-                            TextEditingValue(
-                              text: dob,
-                              selection:
-                                  TextSelection.collapsed(offset: dob.length),
-                            ),
+                      child: TextField(
+                        enabled: false,
+                        controller: TextEditingController.fromValue(
+                          TextEditingValue(
+                            text: age,
+                            selection:
+                                TextSelection.collapsed(offset: dob.length),
                           ),
-                          onChanged: (value) => setState(() {
-                            dob = value;
-                          }),
-                          decoration: const InputDecoration(
-                            fillColor: trans,
-                            labelText: "Age",
-                            labelStyle: TextStyle(
-                              color: textColor,
-                            ),
-                            disabledBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.black, width: 1.0),
-                            ),
-                          ),
-                          style: TextStyle(color: textColor),
                         ),
+                        decoration: const InputDecoration(
+                          fillColor: trans,
+                          labelText: "Age",
+                          labelStyle: TextStyle(
+                            color: textColor,
+                          ),
+                          disabledBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.black, width: 1.0),
+                          ),
+                        ),
+                        style: TextStyle(color: textColor),
                       ),
                     ),
                   ),
