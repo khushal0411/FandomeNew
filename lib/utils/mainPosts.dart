@@ -230,7 +230,7 @@ if (isFilled) {
       });
     }
     setState(() {
-      postPicList = widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(',');
+      postPicList = widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
     });
   }
 

@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/home.dart';
 
 import '../constant/color.dart';
+import 'homeScreen.dart';
 
 class addPostPage extends StatefulWidget {
   const addPostPage({super.key});
@@ -26,6 +27,8 @@ class _addPostPageState extends State<addPostPage> {
   List<XFile?> imageList=[];
   List<String> urlList=[];
   String caption="",loaction="",hashtag="";
+  int uploadCounter=0;
+  String trimedUrlList="";
 
     Future<void> createPost() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -46,16 +49,14 @@ class _addPostPageState extends State<addPostPage> {
     //   "timeStamp":DateTime.now().toString()
     //   });
 
-    for(XFile? i  in imageList){
-      uploadImageToFirestore(i!);
-    }
+    
 
       databaseReference.child("Posts")
       .push().set({
       "userProfilePic":userProfile![3],
       "userName":user!.email?.split('@')[0].toString(),
       "location":loaction,
-      "postPic": urlList.toString(),
+      "postPic":trimedUrlList,
       "like":"",
       "comments":"",
       "caption":caption,
@@ -64,12 +65,19 @@ class _addPostPageState extends State<addPostPage> {
       });
 
     Fluttertoast.showToast(
-        msg: "Profile Created Sucessfully.", toastLength: Toast.LENGTH_SHORT);
-         Navigator.push(context,
+        msg: "Post Added Sucsessfully", toastLength: Toast.LENGTH_SHORT);
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const homeScreen()));
+
   
   }
 
+Future<void> uploadDataAndPost() async{
+    for(XFile? i  in imageList){
+      uploadImageToFirestore(i!);
+      print(i);
+    }
+}
 
 Future<void> uploadImageToFirestore(XFile image) async {
      FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -83,7 +91,14 @@ Future<void> uploadImageToFirestore(XFile image) async {
     final downloadUrl = await snapshot.ref.getDownloadURL();
     setState(() {
       urlList.add(downloadUrl);
+      print(downloadUrl);
+      uploadCounter=uploadCounter+1;
     });
+    if(uploadCounter==imageList.length){
+      trimedUrlList= urlList.join(', ');
+      print('trimmed'+trimedUrlList);
+          createPost();
+    }
     
   }
 
@@ -130,9 +145,9 @@ Future<void> uploadImageToFirestore(XFile image) async {
           actions: [
             IconButton(
               onPressed: () {
-                createPost();
+                uploadDataAndPost();
                 Fluttertoast.showToast(
-                  msg: "You post have been posted",
+                  msg: "Your post have been posted",
                   toastLength: Toast.LENGTH_SHORT,
                 );
               },

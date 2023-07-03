@@ -74,12 +74,13 @@ class _homePageState extends State<homePage> {
           hastag: post['hashtag'],
           comments: post['comments'].toString(),
           like: post['like'].toString(),
-          postPic: post['postPic'],
+          postPic: post['postPic'].toString(),
           timeStamp: post['timeStamp'],
           userProfilepic: post['userProfilePic'],
           index: index,
         );
       }).toList();
+      
 
       setState(() {
         post = castedList;
