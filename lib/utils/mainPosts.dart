@@ -10,6 +10,7 @@ import 'package:testproj/constant/color.dart';
 import 'package:testproj/screens/userProfile.dart';
 import 'package:testproj/utils/comment.dart';
 import 'package:testproj/utils/postlikes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'postlikes.dart';
 
@@ -253,8 +254,16 @@ if (isFilled) {
                         shape: BoxShape.circle, color: lightGrey),
                     child: CircleAvatar(
                       backgroundColor: backgroundColor,
-                      backgroundImage: NetworkImage(widget.userProfilepic),
                       radius: 100,
+                      child: ClipOval(
+                        child: CachedNetworkImage(imageUrl:widget.userProfilepic,
+                        placeholder: (context, url) => Transform.scale(
+                                scale: 0.6,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),),
+                      ),
                     )),
               ),
               Column(
@@ -309,9 +318,16 @@ if (isFilled) {
                       builder: (BuildContext context) {
                         return Container(
                           width: MediaQuery.of(context).size.width,
-                          child: Image.network(
+                          child: CachedNetworkImage(imageUrl:
                             imageUrl,
                             fit: BoxFit.cover,
+                            placeholder:(context, url) =>Transform.scale(
+                              scale: 0.1,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 10,
+                              ),
+                            ),
+                            
                           ),
                         );
                       },
