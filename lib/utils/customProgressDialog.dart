@@ -16,7 +16,7 @@ class _customProgressDialogState extends State<customProgressDialog> {
       backgroundColor: trans,
       elevation: 0,
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: const Column(mainAxisSize: MainAxisSize.min, children: [
           CircularProgressIndicator(
             color: Colors.white,

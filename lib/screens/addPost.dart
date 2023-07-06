@@ -1,8 +1,4 @@
-
-
 import 'dart:io';
-
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -12,7 +8,8 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:testproj/screens/home.dart';
+import 'package:testproj/utils/customProgressDialog.dart';
+import 'package:testproj/utils/customeProgressDialogEditPost.dart';
 
 import '../constant/color.dart';
 import 'homeScreen.dart';
@@ -26,120 +23,131 @@ class addPostPage extends StatefulWidget {
 
 class _addPostPageState extends State<addPostPage> {
   XFile? _image;
-  List<String> imageList=[];
-  List<String> urlList=[];
-  String caption="",loaction="",hashtag="";
-  int uploadCounter=0;
-  String trimedUrlList="";
-  List<String> selectedImagePath=[];
-  int _currentImageIndex=0;
+  List<String> imageList = [];
+  List<String> urlList = [];
+  String caption = "", loaction = "", hashtag = "";
+  int uploadCounter = 0;
+  String trimedUrlList = "";
+  List<String> selectedImagePath = [];
+  int _currentImageIndex = 0;
 
-    Future<void> createPost() async {
+  void showCustomProgressDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return customeProgressDialogEditPost(
+          selectedLength: imageList.length.toString(),
+          uploadedLength: urlList.length.toString(),
+        );
+      },
+    );
+  }
 
-      if(loaction==""){
-        Fluttertoast.showToast(
-        msg: "Please Add location.", toastLength: Toast.LENGTH_SHORT);
+  void closeCustomProgressDialog() {
+    Navigator.of(context).pop();
+  }
 
-      }
-      
-      if(caption==""){
-        Fluttertoast.showToast(
-        msg: "Please Add Caption.", toastLength: Toast.LENGTH_SHORT);
-
-      }
-      
-      if(hashtag==""){
-        Fluttertoast.showToast(
-        msg: "Please Add Hashtag.", toastLength: Toast.LENGTH_SHORT);
-
-      }
-      else{
+  Future<void> createPost() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     List<String>? userProfile = sharedPreferences.getStringList('k');
 
-    databaseReference.child("PostsUser").child(user!.uid.toString())
-      .push().set({
-      "userProfilePic":userProfile![3],
-      "userName":user!.email?.split('@')[0].toString(),
-      "location":loaction,
-      "postPic":trimedUrlList,
-      "like":"",
-      "comments":"",
-      "caption":caption,
-      "hashtag":hashtag,
-      "timeStamp":DateTime.now().toString()
-      });
+    databaseReference
+        .child("PostsUser")
+        .child(user!.uid.toString())
+        .push()
+        .set({
+      "userProfilePic": userProfile![3],
+      "userName": user!.email?.split('@')[0].toString(),
+      "location": loaction,
+      "postPic": trimedUrlList,
+      "like": "",
+      "comments": "",
+      "caption": caption,
+      "hashtag": hashtag,
+      "timeStamp": DateTime.now().toString()
+    });
 
-      databaseReference.child("Posts")
-      .push().set({
-      "userProfilePic":userProfile![3],
-      "userName":user!.email?.split('@')[0].toString(),
-      "location":loaction,
-      "postPic":trimedUrlList,
-      "like":"",
-      "comments":"",
-      "caption":caption,
-      "hashtag":hashtag,
-      "timeStamp":DateTime.now().toString()
-      });
+    databaseReference.child("Posts").push().set({
+      "userProfilePic": userProfile![3],
+      "userName": user!.email?.split('@')[0].toString(),
+      "location": loaction,
+      "postPic": trimedUrlList,
+      "like": "",
+      "comments": "",
+      "caption": caption,
+      "hashtag": hashtag,
+      "timeStamp": DateTime.now().toString()
+    });
 
     Fluttertoast.showToast(
         msg: "Post Added Sucsessfully", toastLength: Toast.LENGTH_SHORT);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const homeScreen()));
-    }
-
-  
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const homeScreen()));
   }
 
-Future<void> uploadDataAndPost() async{
-    for(String i  in imageList){
+  Future<void> uploadDataAndPost() async {
+    for (String i in imageList) {
       uploadImageToFirestore(i!);
+
       print(i);
     }
-}
-
-Future<void> uploadImageToFirestore(String image) async {
-     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    User? user = firebaseAuth.currentUser;
-    final storage = firebase_storage.FirebaseStorage.instance
-        .ref()
-        .child("postImages")
-        .child( "ProfilePic:${user!.uid}/${DateTime.now().microsecond}");
-    final uploadImage = storage.putFile(File(image));
-    final snapshot = await uploadImage.whenComplete(() {});
-    final downloadUrl = await snapshot.ref.getDownloadURL();
-    setState(() {
-      urlList.add(downloadUrl);
-      print(downloadUrl);
-      uploadCounter=uploadCounter+1;
-    });
-    if(uploadCounter==imageList.length){
-      trimedUrlList= urlList.join(', ');
-      print('trimmed'+trimedUrlList);
-          createPost();
-    }
-    
   }
 
+  Future<void> uploadImageToFirestore(String image) async {
+    if (loaction == "") {
+      Fluttertoast.showToast(
+          msg: "Please Add location.", toastLength: Toast.LENGTH_SHORT);
+    }
 
+    if (caption == "") {
+      Fluttertoast.showToast(
+          msg: "Please Add Caption.", toastLength: Toast.LENGTH_SHORT);
+    }
 
+    if (hashtag == "") {
+      Fluttertoast.showToast(
+          msg: "Please Add Hashtag.", toastLength: Toast.LENGTH_SHORT);
+    } else {
+      showCustomProgressDialog(context);
+      FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+      User? user = firebaseAuth.currentUser;
+      final storage = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child("postImages")
+          .child("ProfilePic:${user!.uid}/${DateTime.now().microsecond}");
+      final uploadImage = storage.putFile(File(image));
+      final snapshot = await uploadImage.whenComplete(() {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      setState(() {
+        urlList.add(downloadUrl);
+        print(downloadUrl);
+        uploadCounter = uploadCounter + 1;
+      });
+      if (uploadCounter == imageList.length) {
+        trimedUrlList = urlList.join(', ');
+        print('trimmed' + trimedUrlList);
 
+        createPost();
+        closeCustomProgressDialog();
+      }
+    }
+  }
 
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();
     var pickedImage = await imagePicker.pickMultiImage();
     setState(() {
-      selectedImagePath= pickedImage.map((media) => media.path).toList();
+      selectedImagePath = pickedImage.map((media) => media.path).toList();
     });
-     Navigator.of(context).pop();
-     var data=await cropImages(selectedImagePath);
-     setState(()  {
-       imageList= data;
-     });
+    Navigator.of(context).pop();
+    var data = await cropImages(selectedImagePath);
+    setState(() {
+      imageList = data;
+    });
   }
 
   Future<void> _openCamera() async {
@@ -149,31 +157,32 @@ Future<void> uploadImageToFirestore(String image) async {
     setState(() {
       _image = takenImage;
     });
-     Navigator.of(context).pop();
+    Navigator.of(context).pop();
   }
-Future<List<String>> cropImages(List<String> imagePaths) async {
-  List<String> croppedImagePaths = [];
 
-  for (String imagePath in imagePaths) {
-    File? croppedImage = await ImageCropper().cropImage(
-      sourcePath: imagePath,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-        CropAspectRatioPreset.ratio3x2,
-        CropAspectRatioPreset.original,
-        CropAspectRatioPreset.ratio4x3,
-        CropAspectRatioPreset.ratio16x9
-      ],
-     
-    );
+  Future<List<String>> cropImages(List<String> imagePaths) async {
+    List<String> croppedImagePaths = [];
 
-    if (croppedImage != null) {
-      croppedImagePaths.add(croppedImage.path);
+    for (String imagePath in imagePaths) {
+      File? croppedImage = await ImageCropper().cropImage(
+        sourcePath: imagePath,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+      );
+
+      if (croppedImage != null) {
+        croppedImagePaths.add(croppedImage.path);
+      }
     }
+
+    return croppedImagePaths;
   }
 
-  return croppedImagePaths;
-}
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -456,7 +465,8 @@ Future<List<String>> cropImages(List<String> imagePaths) async {
                                 height: 40,
                                 decoration: BoxDecoration(
                                     shape: BoxShape.rectangle,
-                                    color: Color.fromRGBO(255, 255, 255, 0.5),
+                                    color: const Color.fromRGBO(
+                                        255, 255, 255, 0.5),
                                     borderRadius: BorderRadius.circular(100)),
                                 child: Center(
                                   child: Padding(
@@ -482,7 +492,7 @@ Future<List<String>> cropImages(List<String> imagePaths) async {
                   onChanged: (value) => setState(() {
                     caption = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Add your caption",
                     filled: true,
                     fillColor: trans,
@@ -496,12 +506,13 @@ Future<List<String>> cropImages(List<String> imagePaths) async {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   onChanged: (value) => setState(() {
                     loaction = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Add your location",
                     filled: true,
                     fillColor: trans,
@@ -515,7 +526,8 @@ Future<List<String>> cropImages(List<String> imagePaths) async {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   keyboardType: TextInputType.multiline,
                   maxLength: 100,
@@ -524,7 +536,7 @@ Future<List<String>> cropImages(List<String> imagePaths) async {
                   onChanged: (value) => setState(() {
                     hashtag = value;
                   }),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Add hashtags",
                     filled: true,
                     fillColor: trans,

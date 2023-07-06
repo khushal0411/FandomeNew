@@ -107,12 +107,12 @@ class _signUpState extends State<signUp> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
               child: TextField(
                 onChanged: (value) => setState(() {
                   email = value;
                 }),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Enter your email",
                   filled: true,
                   fillColor: trans,
@@ -126,7 +126,7 @@ class _signUpState extends State<signUp> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
               child: TextField(
                 onChanged: (value) => setState(() {
                   password = value;
@@ -148,17 +148,17 @@ class _signUpState extends State<signUp> {
                   ),
                   filled: true,
                   fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
+                  enabledBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: textColor, width: 1.0),
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: companyColor, width: 1.0),
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
               child: TextField(
                 onChanged: (value) => setState(() {
                   confPassword = value;
@@ -180,23 +180,23 @@ class _signUpState extends State<signUp> {
                   ),
                   filled: true,
                   fillColor: trans,
-                  enabledBorder: OutlineInputBorder(
+                  enabledBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: textColor, width: 1.0),
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: companyColor, width: 1.0),
                   ),
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 40),
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 40),
               child: SizedBox(
                 height: 50,
                 width: double.infinity,
                 child: TextButton(
                   onPressed: signUpFirebase,
-                  style: ButtonStyle(
+                  style: const ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll(companyColor),
                     foregroundColor: MaterialStatePropertyAll(lightGrey),
                     shape: MaterialStatePropertyAll(
@@ -207,7 +207,7 @@ class _signUpState extends State<signUp> {
                       ),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Sign Up",
                     style: TextStyle(
                         color: textColor,
@@ -226,7 +226,7 @@ class _signUpState extends State<signUp> {
                     MaterialPageRoute(builder: (context) => const signIn()),
                   );
                 },
-                child: Center(
+                child: const Center(
                   child: Text(
                     "Already have an account",
                     style: TextStyle(

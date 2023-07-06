@@ -80,7 +80,7 @@ class _userProfilePageState extends State<userProfilePage> {
         backgroundColor: backgroundColor,
         title: Text(
           username,
-          style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
+          style: const TextStyle(fontFamily: 'pacifico', fontSize: 25),
         ),
         actions: [
           IconButton(
@@ -100,7 +100,7 @@ class _userProfilePageState extends State<userProfilePage> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const addPostPage()));
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.add_a_photo_outlined,
               color: textColor,
               size: 30,
@@ -205,11 +205,11 @@ class _userProfilePageState extends State<userProfilePage> {
                     Row(
                       children: [
                         Padding(
-                            padding: EdgeInsets.only(
+                            padding: const EdgeInsets.only(
                                 left: 0, right: 5, bottom: 0, top: 0),
                             child: Visibility(
                               visible: isVerified,
-                              child: Icon(
+                              child: const Icon(
                                 Icons.verified,
                                 color: Colors.blue,
                                 size: 20,
@@ -226,11 +226,11 @@ class _userProfilePageState extends State<userProfilePage> {
                               enabled: false,
                               labelText: name,
                               counterText: '',
-                              labelStyle: TextStyle(
+                              labelStyle: const TextStyle(
                                   fontSize: 20,
                                   color: textColor,
                                   fontWeight: FontWeight.bold),
-                              disabledBorder: UnderlineInputBorder(
+                              disabledBorder: const UnderlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.transparent),
                               ),
@@ -241,7 +241,7 @@ class _userProfilePageState extends State<userProfilePage> {
                     ),
                     Row(
                       children: [
-                        Padding(
+                        const Padding(
                             padding: EdgeInsets.only(
                                 left: 0, right: 5, bottom: 0, top: 0),
                             child: Icon(
@@ -261,11 +261,11 @@ class _userProfilePageState extends State<userProfilePage> {
                                 enabled: false,
                                 labelText: designation,
                                 counterText: '',
-                                labelStyle: TextStyle(
+                                labelStyle: const TextStyle(
                                   fontSize: 13,
                                   color: darkGrey,
                                 ),
-                                disabledBorder: UnderlineInputBorder(
+                                disabledBorder: const UnderlineInputBorder(
                                   borderSide:
                                       BorderSide(color: Colors.transparent),
                                 ),
@@ -277,7 +277,7 @@ class _userProfilePageState extends State<userProfilePage> {
                     ),
                     Row(
                       children: [
-                        Padding(
+                        const Padding(
                             padding: EdgeInsets.only(
                                 left: 0.0, right: 5.0, bottom: 0, top: 0),
                             child: Icon(
@@ -297,11 +297,11 @@ class _userProfilePageState extends State<userProfilePage> {
                                 enabled: false,
                                 labelText: location,
                                 counterText: '',
-                                labelStyle: TextStyle(
+                                labelStyle: const TextStyle(
                                   fontSize: 13,
                                   color: darkGrey,
                                 ),
-                                disabledBorder: UnderlineInputBorder(
+                                disabledBorder: const UnderlineInputBorder(
                                   borderSide:
                                       BorderSide(color: Colors.transparent),
                                 ),
@@ -324,7 +324,7 @@ class _userProfilePageState extends State<userProfilePage> {
             ),
             Row(
               children: [
-                Padding(
+                const Padding(
                     padding:
                         EdgeInsets.only(left: 10.0, right: 0.0, bottom: 5.0),
                     child: Icon(
@@ -347,11 +347,11 @@ class _userProfilePageState extends State<userProfilePage> {
                           enabled: false,
                           labelText: link,
                           counterText: '',
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                               color: Color.fromARGB(255, 38, 102, 154),
                               fontSize: 15,
                               decoration: TextDecoration.underline),
-                          disabledBorder: UnderlineInputBorder(
+                          disabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.transparent),
                           ),
                         ),

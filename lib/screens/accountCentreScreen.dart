@@ -41,9 +41,9 @@ class _accountCentreScreenState extends State<accountCentreScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 10),
-              child: const Center(
+            const Padding(
+              padding: EdgeInsets.only(left: 10.0, right: 10),
+              child: Center(
                 child: Text(
                   "Manage your account settings from JK technologies centre.",
                   style: TextStyle(color: darkGrey, fontSize: 15),

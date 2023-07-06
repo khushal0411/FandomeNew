@@ -21,22 +21,20 @@ class _splashScreenState extends State<splashScreen> {
     Future.delayed(const Duration(seconds: 2), () async {
       User? user = firebaseAuth.currentUser;
       if (user != null) {
-        SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
         bool? check = sharedPreferences.getBool("profile");
-        if(check!=null && check==true){
-Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const homeScreen()),
-        );
+        if (check != null && check == true) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const homeScreen()),
+          );
+        } else if (check == false || check == null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const createProfile()),
+          );
         }
-        else if(check==false || check==null){
-Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const createProfile()),
-        );
-        }
-            
-        
       } else {
         Navigator.pushReplacement(
           context,
@@ -73,7 +71,7 @@ Navigator.pushReplacement(
                 left: 16.0,
                 right: 16.0), // Set the desired left and top padding values
             child: Text(
-              'FanDome',
+              'Snapzy',
               style: TextStyle(
                 fontSize: 65,
                 color: companyColor, // Set your desired text color here

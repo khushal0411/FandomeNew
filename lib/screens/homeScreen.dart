@@ -46,7 +46,7 @@ class _homeScreenState extends State<homeScreen> {
         unselectedItemColor: const Color.fromRGBO(1, 1, 1, 1),
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        selectedIconTheme: IconThemeData(size: 25.0, fill: 1),
+        selectedIconTheme: const IconThemeData(size: 25.0, fill: 1),
         currentIndex: _selectedIndex,
         iconSize: 25,
         onTap: _navigateBottom,
@@ -54,32 +54,32 @@ class _homeScreenState extends State<homeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: _selectedIndex == 0
-                ? Icon(Icons.home_filled)
-                : Icon(Icons.home_outlined),
+                ? const Icon(Icons.home_filled)
+                : const Icon(Icons.home_outlined),
             label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 1
-                ? Icon(Icons.explore)
-                : Icon(Icons.explore_outlined),
+                ? const Icon(Icons.explore)
+                : const Icon(Icons.explore_outlined),
             label: 'Explore',
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 2
-                ? Icon(Icons.circle)
-                : Icon(Icons.circle_outlined),
+                ? const Icon(Icons.circle)
+                : const Icon(Icons.circle_outlined),
             label: 'Story',
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 3
-                ? Icon(Icons.chat_bubble)
-                : Icon(Icons.chat_bubble_outline_rounded),
+                ? const Icon(Icons.chat_bubble)
+                : const Icon(Icons.chat_bubble_outline_rounded),
             label: 'Chat',
           ),
           BottomNavigationBarItem(
             icon: _selectedIndex == 4
-                ? Icon(Icons.account_circle)
-                : Icon(Icons.account_circle_outlined),
+                ? const Icon(Icons.account_circle)
+                : const Icon(Icons.account_circle_outlined),
             label: 'Profile',
           ),
         ],

@@ -37,7 +37,7 @@ class _editProfileState extends State<editProfile> {
       email = "",
       gender = "",
       dob = "",
-      age="";
+      age = "";
   bool _isLoading = false;
 
   bool isProgressDialog = true;
@@ -165,16 +165,8 @@ class _editProfileState extends State<editProfile> {
 
     if (picked != null) {
       setState(() {
-        print(picked.day.toString() +
-            "-" +
-            picked.month.toString() +
-            "-" +
-            picked.year.toString());
-        dob = picked.day.toString() +
-            "-" +
-            picked.month.toString() +
-            "-" +
-            picked.year.toString();
+        print("${picked.day}-${picked.month}-${picked.year}");
+        dob = "${picked.day}-${picked.month}-${picked.year}";
       });
     }
     calculateAge();
@@ -249,11 +241,13 @@ class _editProfileState extends State<editProfile> {
     super.initState();
     userData();
   }
-Future<void> calculateAge() async{
-  int year= int.parse(dob.split('-')[2]);
-  int currentYear= DateTime.now().year.toInt();
-  age= (currentYear-year).toString();
-}
+
+  Future<void> calculateAge() async {
+    int year = int.parse(dob.split('-')[2]);
+    int currentYear = DateTime.now().year.toInt();
+    age = (currentYear - year).toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -397,7 +391,8 @@ Future<void> calculateAge() async{
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 30),
                 child: TextField(
                   controller: TextEditingController(text: email),
                   decoration: const InputDecoration(
@@ -408,7 +403,8 @@ Future<void> calculateAge() async{
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController(text: username),
                   decoration: const InputDecoration(
@@ -419,7 +415,8 @@ Future<void> calculateAge() async{
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(
@@ -460,7 +457,6 @@ Future<void> calculateAge() async{
                           ),
                           onChanged: (value) => setState(() {
                             dob = value;
-                            
                           }),
                           decoration: const InputDecoration(
                             fillColor: trans,
@@ -476,7 +472,7 @@ Future<void> calculateAge() async{
                                   BorderSide(color: Colors.black, width: 1.0),
                             ),
                           ),
-                          style: TextStyle(color: textColor),
+                          style: const TextStyle(color: textColor),
                         ),
                       ),
                     ),
@@ -506,7 +502,7 @@ Future<void> calculateAge() async{
                                 BorderSide(color: Colors.black, width: 1.0),
                           ),
                         ),
-                        style: TextStyle(color: textColor),
+                        style: const TextStyle(color: textColor),
                       ),
                     ),
                   ),
@@ -595,7 +591,8 @@ Future<void> calculateAge() async{
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(

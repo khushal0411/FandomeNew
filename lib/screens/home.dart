@@ -80,7 +80,6 @@ class _homePageState extends State<homePage> {
           index: index,
         );
       }).toList();
-      
 
       setState(() {
         post = castedList;
@@ -91,7 +90,7 @@ class _homePageState extends State<homePage> {
   }
 
   Future<void> refreshPage() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
       getPost();
@@ -100,7 +99,6 @@ class _homePageState extends State<homePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getPost();
     pushData();
@@ -115,7 +113,7 @@ class _homePageState extends State<homePage> {
         elevation: 0,
         backgroundColor: backgroundColor,
         title: const Text(
-          "Fandome",
+          "Snapzy",
           style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
         ),
         actions: [
@@ -204,7 +202,7 @@ class _homePageState extends State<homePage> {
                                   toastLength: Toast.LENGTH_SHORT);
                             }
                           },
-                          child: Row(
+                          child: const Row(
                             children: [
                               Padding(
                                 padding: EdgeInsets.only(

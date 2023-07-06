@@ -475,7 +475,7 @@ class _createProfileState extends State<createProfile> {
                                   BorderSide(color: Colors.black, width: 1.0),
                             ),
                           ),
-                          style: TextStyle(color: textColor),
+                          style: const TextStyle(color: textColor),
                         ),
                       ),
                     ),
@@ -565,7 +565,8 @@ class _createProfileState extends State<createProfile> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 10),
                 child: TextField(
                   controller: TextEditingController.fromValue(
                     TextEditingValue(

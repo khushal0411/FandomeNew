@@ -39,14 +39,14 @@ class _signInState extends State<signIn> {
             toastLength: Toast.LENGTH_SHORT);
         // ignore: use_build_context_synchronously
         getUserData();
-        
       } catch (e) {
         Fluttertoast.showToast(
             msg: e.toString(), toastLength: Toast.LENGTH_SHORT);
       }
     }
   }
-    Future<void> getUserData() async {
+
+  Future<void> getUserData() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
     // data updation
@@ -55,26 +55,25 @@ class _signInState extends State<signIn> {
         .child("Users")
         .child(user!.uid.toString())
         .once()
-        .then((value) async{
+        .then((value) async {
       final data = value.snapshot;
       print(data.value.toString());
-      if(data.value!=null){
-     SharedPreferences sharedPreferences= await SharedPreferences.getInstance();
-            await sharedPreferences.setBool("profile", true);
+      if (data.value != null) {
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        await sharedPreferences.setBool("profile", true);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const homeScreen()),
-        );}
-        else{
-           Navigator.pushReplacement(
+        );
+      } else {
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const createProfile()),
         );
-        }
-    
+      }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +86,7 @@ class _signInState extends State<signIn> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(left: 16.0, right: 16.0),
             child: Row(
               children: [
@@ -108,7 +107,7 @@ class _signInState extends State<signIn> {
               ],
             ),
           ),
-          Padding(
+          const Padding(
             padding: EdgeInsets.only(left: 16, right: 16),
             child: Text(
               "Be Creative...",
@@ -121,7 +120,7 @@ class _signInState extends State<signIn> {
               onChanged: (value) => setState(() {
                 email = value;
               }),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Enter your email",
                 filled: true,
                 fillColor: trans,
@@ -135,7 +134,7 @@ class _signInState extends State<signIn> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20),
             child: TextField(
               onChanged: (value) => setState(() {
                 password = value;
@@ -157,23 +156,23 @@ class _signInState extends State<signIn> {
                 ),
                 filled: true,
                 fillColor: trans,
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: textColor, width: 1.0),
                 ),
-                focusedBorder: OutlineInputBorder(
+                focusedBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: companyColor, width: 1.0),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 40),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 40),
             child: SizedBox(
               height: 50,
               width: double.infinity,
               child: TextButton(
                 onPressed: signInFirebase,
-                style: ButtonStyle(
+                style: const ButtonStyle(
                   backgroundColor: MaterialStatePropertyAll(companyColor),
                   foregroundColor: MaterialStatePropertyAll(lightGrey),
                   shape: MaterialStatePropertyAll(
@@ -184,7 +183,7 @@ class _signInState extends State<signIn> {
                     ),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "Sign In",
                   style: TextStyle(
                       color: textColor,
@@ -195,7 +194,7 @@ class _signInState extends State<signIn> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0),
             child: GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
@@ -203,7 +202,7 @@ class _signInState extends State<signIn> {
                   MaterialPageRoute(builder: (context) => const signUp()),
                 );
               },
-              child: Center(
+              child: const Center(
                 child: Text(
                   "Create new account",
                   style: TextStyle(

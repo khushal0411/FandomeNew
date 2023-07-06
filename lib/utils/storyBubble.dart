@@ -13,7 +13,7 @@ class storyBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: Column(
         children: [
           Container(
@@ -29,7 +29,7 @@ class storyBubble extends StatelessWidget {
           ),
           Text(
             text.substring(0, 10),
-            style: TextStyle(fontSize: 12),
+            style: const TextStyle(fontSize: 12),
           ),
         ],
       ),

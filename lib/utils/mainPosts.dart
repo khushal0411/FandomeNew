@@ -47,90 +47,88 @@ class _mainPostState extends State<mainPost> {
   String userComment = "";
   final TransformationController _transformationController =
       TransformationController();
+  TextEditingController _textEditingController = TextEditingController();
   bool isFilled = false;
   String likedData = "";
   bool checkLike = false;
   int _currentImageIndex = 0;
   List<comment> commentList = [];
   List<String> postPicList = List.empty();
-  String firstLikeduser="";
-  int totallikes=0;
-  
+  String firstLikeduser = "";
+  int totallikes = 0;
 
   void _resetScale() {
     _transformationController.value = Matrix4.identity();
   }
 
-
-  void toggleIcon(){
+  void toggleIcon() {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  User? user = firebaseAuth.currentUser;
+    User? user = firebaseAuth.currentUser;
 
-  String currentUserName= user!.email!.split('@')[0].toString();
+    String currentUserName = user!.email!.split('@')[0].toString();
 
-      if (widget.like.isNotEmpty) {
-        List<dynamic> likeList = jsonDecode(widget.like);
-        List<postlikes> userLike= likeList.map((json) => postlikes.fromJson(json)).toList();
+    if (widget.like.isNotEmpty) {
+      List<dynamic> likeList = jsonDecode(widget.like);
+      List<postlikes> userLike =
+          likeList.map((json) => postlikes.fromJson(json)).toList();
       print(userLike.length);
       userLike.remove(postlikes(username: "test"));
       print(userLike.length);
-if (isFilled) {
-      userLike.removeWhere((like) => like.username == currentUserName);
-      if(userLike.isEmpty){
-       updateData("");
-       setState(() {
-         checkLike = false;
-         likedData="";
-       });
+      if (isFilled) {
+        userLike.removeWhere((like) => like.username == currentUserName);
+        if (userLike.isEmpty) {
+          updateData("");
+          setState(() {
+            checkLike = false;
+            likedData = "";
+          });
         } else {
-          String updatedLikes = jsonEncode(userLike.map((like) => like.toJson()).toList());
+          String updatedLikes =
+              jsonEncode(userLike.map((like) => like.toJson()).toList());
           updateData(updatedLikes);
           setState(() {
             checkLike = true;
-            totallikes=userLike.length;
-            firstLikeduser=userLike[0].username;
-            likedData=updatedLikes;
+            totallikes = userLike.length;
+            firstLikeduser = userLike[0].username;
+            likedData = updatedLikes;
           });
         }
 
         setState(() {
           isFilled = !isFilled;
-        
         });
-      }
-      
-     else {
-      bool containsUsername = userLike.any((like) => like.username == currentUserName);
-      if (!containsUsername) {
-        userLike.add(postlikes(username: currentUserName));
-        String updatedLikes = jsonEncode(userLike.map((like) => like.toJson()).toList());
-        updateData(updatedLikes);
-         setState(() {
+      } else {
+        bool containsUsername =
+            userLike.any((like) => like.username == currentUserName);
+        if (!containsUsername) {
+          userLike.add(postlikes(username: currentUserName));
+          String updatedLikes =
+              jsonEncode(userLike.map((like) => like.toJson()).toList());
+          updateData(updatedLikes);
+          setState(() {
             isFilled = true;
             likedData = updatedLikes;
             checkLike = true;
-             totallikes=userLike.length;
-            firstLikeduser=userLike[0].username;
+            totallikes = userLike.length;
+            firstLikeduser = userLike[0].username;
           });
         }
-      
       }
+    } else {
+      List<postlikes> userLike = [];
+      userLike.add(postlikes(username: currentUserName));
+      String updatedLikes =
+          jsonEncode(userLike.map((like) => like.toJson()).toList());
+      updateData(updatedLikes);
+      setState(() {
+        isFilled = true;
+        likedData = updatedLikes;
+        checkLike = true;
+        totallikes = userLike.length;
+        firstLikeduser = userLike[0].username;
+      });
     }
-    else{
-      List<postlikes> userLike= [];
-        userLike.add(postlikes(username: currentUserName));
-        String updatedLikes = jsonEncode(userLike.map((like) => like.toJson()).toList());
-        updateData(updatedLikes);
-         setState(() {
-            isFilled = true;
-            likedData = updatedLikes;
-            checkLike = true;
-            totallikes=userLike.length;
-            firstLikeduser=userLike[0].username;
-          });
-        
-    }}
-
+  }
 
   Future<void> updateData(String likes) async {
     Map<String, dynamic> updatedData = {"like": likes};
@@ -193,23 +191,24 @@ if (isFilled) {
   Future<void> checkLikes() async {
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
-    String currentUserName= user!.email!.split('@')[0].toString();
+    String currentUserName = user!.email!.split('@')[0].toString();
     if (widget.like.isNotEmpty) {
       List<dynamic> likeList = jsonDecode(widget.like);
-    List<postlikes> userLike= likeList.map((json) => postlikes.fromJson(json)).toList();
+      List<postlikes> userLike =
+          likeList.map((json) => postlikes.fromJson(json)).toList();
       checkLike = true;
-       totallikes=userLike.length;
-        firstLikeduser=userLike[0].username;
-    if (userLike.any((like) => like.username == currentUserName)) {
-      isFilled = true;
-    } else {
-      isFilled = false;
-    }}
+      totallikes = userLike.length;
+      firstLikeduser = userLike[0].username;
+      if (userLike.any((like) => like.username == currentUserName)) {
+        isFilled = true;
+      } else {
+        isFilled = false;
+      }
+    }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     checkLikes();
     likedData = widget.like;
@@ -231,7 +230,8 @@ if (isFilled) {
       });
     }
     setState(() {
-      postPicList = widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
+      postPicList =
+          widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
     });
   }
 
@@ -256,13 +256,15 @@ if (isFilled) {
                       backgroundColor: backgroundColor,
                       radius: 100,
                       child: ClipOval(
-                        child: CachedNetworkImage(imageUrl:widget.userProfilepic,
-                        placeholder: (context, url) => Transform.scale(
-                                scale: 0.6,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.userProfilepic,
+                          placeholder: (context, url) => Transform.scale(
+                            scale: 0.6,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        ),
                       ),
                     )),
               ),
@@ -318,16 +320,15 @@ if (isFilled) {
                       builder: (BuildContext context) {
                         return Container(
                           width: MediaQuery.of(context).size.width,
-                          child: CachedNetworkImage(imageUrl:
-                            imageUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
                             fit: BoxFit.cover,
-                            placeholder:(context, url) =>Transform.scale(
+                            placeholder: (context, url) => Transform.scale(
                               scale: 0.1,
-                              child: CircularProgressIndicator(
+                              child: const CircularProgressIndicator(
                                 strokeWidth: 10,
                               ),
                             ),
-                            
                           ),
                         );
                       },
@@ -342,7 +343,7 @@ if (isFilled) {
                     height: 40,
                     decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        color: Color.fromRGBO(255, 255, 255, 0.5),
+                        color: const Color.fromRGBO(255, 255, 255, 0.5),
                         borderRadius: BorderRadius.circular(100)),
                     child: Center(
                       child: Padding(
@@ -387,7 +388,7 @@ if (isFilled) {
                                 .viewInsets
                                 .bottom, // Adjust for keyboard height
                           ),
-                          height: 470,
+                          height: MediaQuery.of(context).size.height * 0.9,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -405,7 +406,7 @@ if (isFilled) {
                                   ),
                                 ),
                               ),
-                              Center(
+                              const Center(
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 10.0),
                                   child: Text(
@@ -434,7 +435,8 @@ if (isFilled) {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Container(
-                                    height: 360,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.75,
                                     child: ListView.builder(
                                       scrollDirection: Axis.vertical,
                                       itemCount: commentList.length,
@@ -456,21 +458,26 @@ if (isFilled) {
                                       padding: const EdgeInsets.only(
                                           left: 10.0, right: 0),
                                       child: TextField(
+                                        controller: _textEditingController,
                                         onChanged: (value) => setState(() {
                                           userComment = value;
                                         }),
-                                        decoration: InputDecoration(
-                                            hintText: "Add your comment"),
+                                        decoration: const InputDecoration(
+                                            hintText: "Add your comments"),
                                       ),
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: postComment,
+                                    onTap: () {
+                                      postComment();
+                                      FocusScope.of(context).unfocus();
+                                      _textEditingController.clear();
+                                    },
                                     child: SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.1,
-                                      child: Padding(
-                                          padding: const EdgeInsets.only(
+                                      child: const Padding(
+                                          padding: EdgeInsets.only(
                                               left: 0.0, right: 10),
                                           child: Icon(Icons.send_outlined)),
                                     ),
@@ -484,7 +491,7 @@ if (isFilled) {
                     },
                   );
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.comment_outlined,
                   size: 30,
                 ),
@@ -494,12 +501,11 @@ if (isFilled) {
           Visibility(
             visible: checkLike,
             child: Padding(
-              padding: EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 10),
               child: Text(
-                  "Liked by $firstLikeduser${totallikes > 1
-                          ? " and ${totallikes-1} others"
-                          : ""}",
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  "Liked by $firstLikeduser${totallikes > 1 ? " and ${totallikes - 1} others" : ""}",
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold)),
             ),
           ),
           Padding(
@@ -515,12 +521,12 @@ if (isFilled) {
                           style: const TextStyle(
                               fontSize: 15, fontWeight: FontWeight.bold),
                         ),
-                        TextSpan(
+                        const TextSpan(
                             text: " ", style: const TextStyle(fontSize: 15)),
                         TextSpan(
                             text: widget.caption,
                             style: const TextStyle(fontSize: 15)),
-                        TextSpan(
+                        const TextSpan(
                             text: " ", style: const TextStyle(fontSize: 15)),
                         TextSpan(
                             text: widget.hastag,
@@ -530,23 +536,15 @@ if (isFilled) {
                 ),
               )),
           Padding(
-            padding: EdgeInsets.only(left: 10),
+            padding: const EdgeInsets.only(left: 10),
             child: Text(
                 DateTime.now()
                             .difference(DateTime.parse(widget.timeStamp))
                             .inHours >
                         12
-                    ? DateTime.now()
-                            .difference(DateTime.parse(widget.timeStamp))
-                            .inDays
-                            .toString() +
-                        " days ago"
-                    : DateTime.now()
-                            .difference(DateTime.parse(widget.timeStamp))
-                            .inHours
-                            .toString() +
-                        " hours ago",
-                style: TextStyle(
+                    ? "${DateTime.now().difference(DateTime.parse(widget.timeStamp)).inDays} days ago"
+                    : "${DateTime.now().difference(DateTime.parse(widget.timeStamp)).inHours} hours ago",
+                style: const TextStyle(
                     fontSize: 14, color: Color.fromRGBO(150, 150, 150, 1))),
           ),
         ],

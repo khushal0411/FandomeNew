@@ -15,7 +15,7 @@ class storyPage extends StatelessWidget {
         title: Row(
           children: [
             const Text(
-              "Fandome",
+              "Snapzy",
               style: TextStyle(fontFamily: 'pacifico', fontSize: 25),
             ),
             Padding(
