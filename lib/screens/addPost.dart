@@ -1,10 +1,14 @@
+
+
 import 'dart:io';
+
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,86 +26,120 @@ class addPostPage extends StatefulWidget {
 
 class _addPostPageState extends State<addPostPage> {
   XFile? _image;
-  List<XFile?> imageList = [];
-  List<String> urlList = [];
-  String caption = "", loaction = "", hashtag = "";
-  int uploadCounter = 0;
-  String trimedUrlList = "";
-  int _currentImageIndex = 0;
+  List<String> imageList=[];
+  List<String> urlList=[];
+  String caption="",loaction="",hashtag="";
+  int uploadCounter=0;
+  String trimedUrlList="";
+  List<String> selectedImagePath=[];
+  int _currentImageIndex=0;
 
-  Future<void> createPost() async {
+    Future<void> createPost() async {
+
+      if(loaction==""){
+        Fluttertoast.showToast(
+        msg: "Please Add location.", toastLength: Toast.LENGTH_SHORT);
+
+      }
+      
+      if(caption==""){
+        Fluttertoast.showToast(
+        msg: "Please Add Caption.", toastLength: Toast.LENGTH_SHORT);
+
+      }
+      
+      if(hashtag==""){
+        Fluttertoast.showToast(
+        msg: "Please Add Hashtag.", toastLength: Toast.LENGTH_SHORT);
+
+      }
+      else{
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     List<String>? userProfile = sharedPreferences.getStringList('k');
-    // databaseReference.child("Postsuser").child(user!.uid.toString())
-    //   .push().set({
-    //   "userProfilePic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
-    //   "userName":user.email?.split('@')[0].toString(),
-    //   "location":"Vadodara, Gujarat, IN",
-    //   "postPic":"https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Ftest%40gmail.com%3AProfilePic?alt=media&token=936c1871-14ce-4ad5-9175-edf1c1852325",
-    //   "like":"[joy,Khushal,ali]",
-    //   "comments":"{'joy':'nice','khushal':'good'}",
-    //   "caption":"Beautiful life......",
-    //   "hashtag":"#life #enjoy",
-    //   "timeStamp":DateTime.now().toString()
-    //   });
 
-    databaseReference.child("Posts").push().set({
-      "userProfilePic": userProfile![3],
-      "userName": user!.email?.split('@')[0].toString(),
-      "location": loaction,
-      "postPic": trimedUrlList,
-      "like": "",
-      "comments": "",
-      "caption": caption,
-      "hashtag": hashtag,
-      "timeStamp": DateTime.now().toString()
-    });
+    databaseReference.child("PostsUser").child(user!.uid.toString())
+      .push().set({
+      "userProfilePic":userProfile![3],
+      "userName":user!.email?.split('@')[0].toString(),
+      "location":loaction,
+      "postPic":trimedUrlList,
+      "like":"",
+      "comments":"",
+      "caption":caption,
+      "hashtag":hashtag,
+      "timeStamp":DateTime.now().toString()
+      });
+
+      databaseReference.child("Posts")
+      .push().set({
+      "userProfilePic":userProfile![3],
+      "userName":user!.email?.split('@')[0].toString(),
+      "location":loaction,
+      "postPic":trimedUrlList,
+      "like":"",
+      "comments":"",
+      "caption":caption,
+      "hashtag":hashtag,
+      "timeStamp":DateTime.now().toString()
+      });
 
     Fluttertoast.showToast(
         msg: "Post Added Sucsessfully", toastLength: Toast.LENGTH_SHORT);
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const homeScreen()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const homeScreen()));
+    }
+
+  
   }
 
-  Future<void> uploadDataAndPost() async {
-    for (XFile? i in imageList) {
+Future<void> uploadDataAndPost() async{
+    for(String i  in imageList){
       uploadImageToFirestore(i!);
       print(i);
     }
-  }
+}
 
-  Future<void> uploadImageToFirestore(XFile image) async {
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+Future<void> uploadImageToFirestore(String image) async {
+     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
     final storage = firebase_storage.FirebaseStorage.instance
         .ref()
         .child("postImages")
-        .child("ProfilePic:${user!.uid}/${DateTime.now().microsecond}");
-    final uploadImage = storage.putFile(File(image.path));
+        .child( "ProfilePic:${user!.uid}/${DateTime.now().microsecond}");
+    final uploadImage = storage.putFile(File(image));
     final snapshot = await uploadImage.whenComplete(() {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
     setState(() {
       urlList.add(downloadUrl);
       print(downloadUrl);
-      uploadCounter = uploadCounter + 1;
+      uploadCounter=uploadCounter+1;
     });
-    if (uploadCounter == imageList.length) {
-      trimedUrlList = urlList.join(', ');
-      print('trimmed' + trimedUrlList);
-      createPost();
+    if(uploadCounter==imageList.length){
+      trimedUrlList= urlList.join(', ');
+      print('trimmed'+trimedUrlList);
+          createPost();
     }
+    
   }
+
+
+
+
 
   Future<void> _openGallery() async {
     var imagePicker = ImagePicker();
     var pickedImage = await imagePicker.pickMultiImage();
     setState(() {
-      imageList = pickedImage;
+      selectedImagePath= pickedImage.map((media) => media.path).toList();
     });
-    Navigator.of(context).pop();
+     Navigator.of(context).pop();
+     var data=await cropImages(selectedImagePath);
+     setState(()  {
+       imageList= data;
+     });
   }
 
   Future<void> _openCamera() async {
@@ -111,9 +149,31 @@ class _addPostPageState extends State<addPostPage> {
     setState(() {
       _image = takenImage;
     });
-    Navigator.of(context).pop();
+     Navigator.of(context).pop();
+  }
+Future<List<String>> cropImages(List<String> imagePaths) async {
+  List<String> croppedImagePaths = [];
+
+  for (String imagePath in imagePaths) {
+    File? croppedImage = await ImageCropper().cropImage(
+      sourcePath: imagePath,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+     
+    );
+
+    if (croppedImage != null) {
+      croppedImagePaths.add(croppedImage.path);
+    }
   }
 
+  return croppedImagePaths;
+}
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -379,7 +439,7 @@ class _addPostPageState extends State<addPostPage> {
                                         width:
                                             MediaQuery.of(context).size.width,
                                         child: Image.file(
-                                          File(assets!.path),
+                                          File(assets),
                                           fit: BoxFit.cover,
                                         ),
                                       );
