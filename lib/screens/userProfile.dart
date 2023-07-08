@@ -1,12 +1,18 @@
+
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testproj/screens/addPost.dart';
 import 'package:testproj/screens/editProfile.dart';
 import 'package:testproj/utils/enlargeImage.dart';
+import 'package:testproj/utils/userProfilePost.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../constant/color.dart';
+import '../utils/mainPosts.dart';
 
 class userProfilePage extends StatefulWidget {
   const userProfilePage({super.key});
@@ -20,13 +26,16 @@ class _userProfilePageState extends State<userProfilePage> {
   String username = "";
   bool isVerified = false;
   String designation = "";
+  String profilePic="https://firebasestorage.googleapis.com/v0/b/fandome-7f9ba.appspot.com/o/profileImages%2Faddprofile.png?alt=media&token=5526aac0-4cef-4204-bc1c-809a694e7ed6";
   String location = "",
       bio = "",
       link = "",
-      profilePic = "",
+      
       email = "",
       gender = "",
       dob = "";
+      List<userProfilePost> post = List.empty();
+      List<String> firstPostPic=[];
 
   bool isEnlarges = false;
 
@@ -63,12 +72,58 @@ class _userProfilePageState extends State<userProfilePage> {
           msg: "Could not open URL", toastLength: Toast.LENGTH_SHORT);
     }
   }
+    Future<void> getPostUser() async {
+    // data updation
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+
+FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? userMail = firebaseAuth.currentUser;
+    String address= "PostsUser/${userMail?.uid}";
+    databaseReference.child(address).once().then((value) async {
+      
+      if(value.snapshot.exists && value.snapshot!=null  ){
+      final data = value.snapshot;
+      Object? values = data.value;
+      
+      Map<dynamic, dynamic>? profileData = values as Map?;
+
+      
+      List<userProfilePost> castedList = profileData!.entries.map((entry) {
+        String index = entry.key;
+        //String key = l1[index];
+        Map<dynamic, dynamic> post = entry.value as Map<dynamic, dynamic>;
+        return userProfilePost(
+          userName: post['userName'],
+          location: post['location'],
+          caption: post['caption'],
+          hastag: post['hashtag'],
+          comments: post['comments'].toString(),
+          like: post['like'].toString(),
+          postPic: post['postPic'].toString(),
+          timeStamp: post['timeStamp'],
+          userProfilepic: post['userProfilePic'],
+          index: index,
+        );
+      }).toList();
+
+      setState(() {
+        post = castedList;
+      });
+      
+
+      print("postUserProfile");
+      print(castedList);
+      }
+    });
+  }
+
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     userData();
+    getPostUser();
   }
 
   @override
@@ -191,10 +246,20 @@ class _userProfilePageState extends State<userProfilePage> {
                         decoration: const BoxDecoration(
                             shape: BoxShape.circle, color: lightGrey),
                         child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 100,
-                          backgroundImage: NetworkImage(profilePic),
+                      backgroundColor: backgroundColor,
+                      radius: 100,
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: profilePic,
+                          placeholder: (context, url) => Transform.scale(
+                            scale: 0.6,
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
                         ),
+                      ),
+                    ),
                       ),
                     ),
                   ),
@@ -368,24 +433,22 @@ class _userProfilePageState extends State<userProfilePage> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            GridView.builder(
-              itemCount: 10,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3),
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Container(
-                    color: lightGrey,
-                    child: Image.asset(
-                      'assets/images/$index.png',
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                );
-              },
+            Visibility(visible:post.isEmpty,child: const Text("No Posts Added Yet")),
+            Visibility(
+              visible: post.isNotEmpty,
+              child: GridView.builder(
+                itemCount: post.isEmpty?0:post.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+               itemBuilder: (context, index) {
+                          userProfilePost data = post[index];
+                          if(data.postPic.isNotEmpty){
+                          print(index);
+                          return data;}
+                        },
+              ),
             ),
           ],
         ),

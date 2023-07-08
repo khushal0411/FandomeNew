@@ -57,11 +57,13 @@ class _homePageState extends State<homePage> {
   Future<void> getPost() async {
     // data updation
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+      
 
     databaseReference.child('Posts').once().then((value) async {
       final data = value.snapshot;
       Object? values = data.value;
       Map<dynamic, dynamic>? profileData = values as Map?;
+      if(value.snapshot.exists && profileData!=null && profileData.isNotEmpty ){
 
       List<mainPost> castedList = profileData!.entries.map((entry) {
         String index = entry.key;
@@ -85,8 +87,9 @@ class _homePageState extends State<homePage> {
         post = castedList;
       });
 
-      print(castedList);
+      print(castedList);}
     });
+      
   }
 
   Future<void> refreshPage() async {

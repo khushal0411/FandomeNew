@@ -68,7 +68,8 @@ class _addPostPageState extends State<addPostPage> {
       "comments": "",
       "caption": caption,
       "hashtag": hashtag,
-      "timeStamp": DateTime.now().toString()
+      "timeStamp": DateTime.now().toString(),
+      "userId":user!.uid.toString()
     });
 
     databaseReference.child("Posts").push().set({
@@ -80,7 +81,8 @@ class _addPostPageState extends State<addPostPage> {
       "comments": "",
       "caption": caption,
       "hashtag": hashtag,
-      "timeStamp": DateTime.now().toString()
+      "timeStamp": DateTime.now().toString(),
+      "userId":user!.uid.toString()
     });
 
     Fluttertoast.showToast(
