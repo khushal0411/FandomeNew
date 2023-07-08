@@ -24,10 +24,11 @@ class _homePageState extends State<homePage> {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   List<mainPost> post = List.empty();
   Future<void> pushData() async {
+
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     User? user = firebaseAuth.currentUser;
-    // data updation
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    
     databaseReference
         .child("Users")
         .child(user!.uid.toString())
@@ -57,6 +58,7 @@ class _homePageState extends State<homePage> {
   Future<void> getPost() async {
     // data updation
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    
       
 
     databaseReference.child('Posts').once().then((value) async {

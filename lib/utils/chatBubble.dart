@@ -5,14 +5,15 @@ import 'package:testproj/constant/color.dart';
 import 'emojiDialog.dart';
 
 class chatBubble extends StatefulWidget {
+  final bool isMe=false;
   final String message;
-  final bool isMe;
+  final String userId;
   final String time;
-  final bool isReactEmoji;
+  final String isReactEmoji;
 
   const chatBubble(
       {required this.message,
-      required this.isMe,
+      required this.userId,
       required this.time,
       required this.isReactEmoji});
 
@@ -21,6 +22,7 @@ class chatBubble extends StatefulWidget {
 }
 
 class _chatBubbleState extends State<chatBubble> {
+  
   void showCustomProgressDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -78,7 +80,7 @@ class _chatBubbleState extends State<chatBubble> {
                   ),
                 ),
                 Visibility(
-                  visible: widget.isReactEmoji,
+                  visible: true,
                   child: GestureDetector(
                     onTap: () {
                       showModalBottomSheet(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:testproj/screens/chatRoom.dart';
 
 import '../constant/color.dart';
 import '../utils/chatAccount.dart';
@@ -22,21 +23,26 @@ class chatPage extends StatelessWidget {
           scrollDirection: Axis.vertical,
           child: Container(
             height: MediaQuery.of(context).size.height,
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              children: [
-                chatAccount(
-                    username: "Joy Patel", email: "joypatel242001@gmail.com"),
-                chatAccount(
-                    username: "Khsuhal Goyal",
-                    email: "khushalgoyal780@gmail.com"),
-                chatAccount(
-                    username: "KaranSinh Nakum",
-                    email: "karansignnakum123@gmail.com"),
-                chatAccount(
-                    username: "Ali Mohammed Haiderali Merchawala",
-                    email: "alimohammedhaideralimerchawala@gmail.com"),
-              ],
+            child: GestureDetector(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder:(context) => const chatRoom()));
+              },
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                children: [
+                  chatAccount(
+                      username: "Joy Patel", email: "joypatel242001@gmail.com"),
+                  chatAccount(
+                      username: "Khsuhal Goyal",
+                      email: "khushalgoyal780@gmail.com"),
+                  chatAccount(
+                      username: "KaranSinh Nakum",
+                      email: "karansignnakum123@gmail.com"),
+                  chatAccount(
+                      username: "Ali Mohammed Haiderali Merchawala",
+                      email: "alimohammedhaideralimerchawala@gmail.com"),
+                ],
+              ),
             ),
           )),
     );
