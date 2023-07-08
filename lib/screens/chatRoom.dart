@@ -1,7 +1,15 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:testproj/utils/chatResponse.dart';
 
 import '../constant/color.dart';
 import '../utils/chatBubble.dart';
+import 'homeScreen.dart';
 
 class chatRoom extends StatefulWidget {
   const chatRoom({super.key});
@@ -18,6 +26,7 @@ class _chatRoomState extends State<chatRoom> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
+    getChats();
   }
 
   @override
@@ -26,6 +35,101 @@ class _chatRoomState extends State<chatRoom> with WidgetsBindingObserver {
     WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
+
+    Future<void> createChat() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    User? user = firebaseAuth.currentUser;
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    List<String>? userProfile = sharedPreferences.getStringList('k');
+
+    // databaseReference
+    //     .child("PostsUser")
+    //     .child(user!.uid.toString())
+    //     .push()
+    //     .set({
+    //   "userProfilePic": userProfile![3],
+    //   "userName": user!.email?.split('@')[0].toString(),
+    //   "location": loaction,
+    //   "postPic": trimedUrlList,
+    //   "like": "",
+    //   "comments": "",
+    //   "caption": caption,
+    //   "hashtag": hashtag,
+    //   "timeStamp": DateTime.now().toString(),
+    //   "userId":user!.uid.toString()
+    // });
+    
+     Map<String, dynamic> updatedData = {
+      "messages": '[{"text":"testing","timeStamp":"2023-07-06 22:15:30.881864","User":"6CixBiZPvLT9uZKOQCqpzHcjfpI3","emoji":""},{"text":"data","timeStamp":"2023-07-06 22:15:30.881864","User":"gmhUYAOL6pOSpdSenBcC6icBIDN2","emoji":""}]'
+    };
+ databaseReference.child("Chats").child(user!.uid.toString()).child('6CixBiZPvLT9uZKOQCqpzHcjfpI3').push().set({
+      'messages':"[{'text':'testing','timeStamp':'2023-07-06 22:15:30.881864','User':'6CixBiZPvLT9uZKOQCqpzHcjfpI3','emoji':''},{'text':'data','timeStamp':'2023-07-06 22:15:30.881864','User':'gmhUYAOL6pOSpdSenBcC6icBIDN2','emoji':''}]"
+    });
+
+    databaseReference.child('Chats').child('6CixBiZPvLT9uZKOQCqpzHcjfpI3').child(user!.uid.toString()).update(updatedData).then((value) {
+        Fluttertoast.showToast(
+            msg: "Profile Updated Sucessfully.",
+            toastLength: Toast.LENGTH_SHORT);
+        //updateUserData();
+        
+
+        //Navigator.push(context, MaterialPageRoute(builder:  (context) => const homeScreen()));
+      }).catchError((error) {
+        Fluttertoast.showToast(
+            msg: "Error Occured while updating Data.",
+            toastLength: Toast.LENGTH_SHORT);
+      });
+
+    Fluttertoast.showToast(
+        msg: "Post Added Sucsessfully", toastLength: Toast.LENGTH_SHORT);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const homeScreen()));
+  }
+
+
+ Future<void> getChats() async {
+  DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  User? user = firebaseAuth.currentUser;
+
+  databaseReference.child('Chats').child('6CixBiZPvLT9uZKOQCqpzHcjfpI3').child(user!.uid.toString()).once().then((value) async {
+    final data = value.snapshot;
+    Object? values = data.value;
+    Map<dynamic, dynamic>? profileData = values as Map?;
+
+    if (value.snapshot.exists && profileData != null && profileData.isNotEmpty) {
+      List<chatResponse> castedList = profileData!.entries.map((entry) {
+        String index = entry.key;
+        return chatResponse(key: index, message: entry.value);
+      }).toList();
+
+      print(castedList[0].message);
+
+      List<dynamic> dataList = jsonDecode(castedList[0].message.toString());
+      print(dataList);
+
+      List<Map<String, dynamic>> list = dataList.cast<Map<String, dynamic>>();
+      List<chatBubble> castedListChat = list.map((entry) {
+        return chatBubble(
+          message: entry['text'],
+          userId: entry['User'],
+          time: entry['timeStamp'],
+          isReactEmoji: entry['emoji'],
+        );
+      }).toList();
+
+      print("chatList: " + castedListChat[0].message);
+
+      
+
+      print(castedList);
+    }
+  });
+}
+
+
+
 
   @override
   void didChangeMetrics() {
@@ -91,12 +195,7 @@ class _chatRoomState extends State<chatRoom> with WidgetsBindingObserver {
                             style: TextStyle(color: darkGrey, fontSize: 15),
                           ),
                         ),
-                        chatBubble(
-                          message: "Hey, long time no see! How have you been?",
-                          isMe: true,
-                          time: "10:00 AM",
-                          isReactEmoji: true,
-                        ),
+                        
                       ],
                     ),
                   ),
