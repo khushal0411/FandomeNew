@@ -34,94 +34,95 @@ class userProfilePost extends StatefulWidget {
 }
 
 class _userProfilePostState extends State<userProfilePost> {
-   List<String> postPicList = List.empty();
-   
+  List<String> postPicList = List.empty();
+
   bool isEnlarges = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    postPicList =
-          widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
-          print(postPicList);
+    postPicList = widget.postPic.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
+    print(postPicList);
   }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Container(
-                    color: lightGrey,
-                    child: GestureDetector(
-                      onLongPress: () {
-                      setState(() {
-                        isEnlarges = true;
-                      });
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              enlargeImage(profilePic: postPicList[0]),
-                        ),
-                      );
-                    },
-                    onLongPressEnd: (_) {
-                      setState(() {
-                        isEnlarges = false;
-                      });
-                      Navigator.pop(context);
-                    },
-                      child: Stack(children: [
-                                    CarouselSlider(
-                                      options: CarouselOptions(
-                      height: 450,
-                      enableInfiniteScroll: false,
-                      viewportFraction: 1.0,
-                      
-                      enlargeCenterPage: false,
-                      scrollDirection: Axis.horizontal,
-                      autoPlay: false,
-                                      ),
-                                      items: postPicList.map((imageUrl) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            child: CachedNetworkImage(
-                              imageUrl: imageUrl,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Transform.scale(
-                                scale: 0.1,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 10,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                                      }).toList(),
-                                    ),
-                                    Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: Container(
-                      width: 50,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: const Color.fromRGBO(255, 255, 255, 0.5),
-                          borderRadius: BorderRadius.circular(100)),
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(1.0),
-                          child: Icon(Icons.collections_outlined),
+      padding: const EdgeInsets.all(1.0),
+      child: Container(
+        color: lightGrey,
+        child: GestureDetector(
+          onLongPress: () {
+            setState(() {
+              isEnlarges = true;
+            });
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => enlargeImage(profilePic: postPicList[0]),
+              ),
+            );
+          },
+          onLongPressEnd: (_) {
+            setState(() {
+              isEnlarges = false;
+            });
+            Navigator.pop(context);
+          },
+          child: Stack(children: [
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 450,
+                enableInfiniteScroll: false,
+                viewportFraction: 1.0,
+                enlargeCenterPage: false,
+                scrollDirection: Axis.horizontal,
+                autoPlay: false,
+              ),
+              items: postPicList.map((imageUrl) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Transform.scale(
+                          scale: 0.1,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 10,
+                          ),
                         ),
                       ),
-                                      ),
-                                    ),
-                                  ]),
-                    ),
-                    ),
                     );
+                  },
+                );
+              }).toList(),
+            ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    color: const Color.fromRGBO(255, 255, 255, 0.5),
+                    borderRadius: BorderRadius.circular(100)),
+                child: const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(1.0),
+                    child: Icon(
+                      Icons.collections_outlined,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }
